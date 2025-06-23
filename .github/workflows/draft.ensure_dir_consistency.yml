@@ -1,0 +1,123 @@
+name: Check .github folder consistency
+
+on:
+  pull_request:
+    types: [closed]
+    # Only run if the PR was merged # This comment is now slightly misplaced, but the 'if' below handles it.
+
+jobs:
+  check_consistency:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    env:
+      # IMPORTANT: Replace this with a space-separated list of your anchorOrg repositories.
+      # Example: "anchorOrg/repo1 anchorOrg/repo2 anchorOrg/repo3"
+      # This list should include ALL repositories in anchorOrg that need this check.
+      TARGET_REPOS: "anchorOrg/placeholder-repo1 anchorOrg/placeholder-repo2" # <<< TODO: UPDATE THIS LIST
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+
+      - name: Set current repo name
+        id: current_repo_name
+        run: echo "REPO_NAME=${{ github.repository }}" >> $GITHUB_OUTPUT
+
+      - name: Verify .github folder consistency across repositories
+        run: |
+          echo "Current repository (reference for this run): ${{ steps.current_repo_name.outputs.REPO_NAME }}"
+          echo "Checking .github folder consistency..."
+
+          source_github_path=".github" # Relative to checked out current repository
+
+          if [ ! -d "$source_github_path" ]; then
+            echo "Error: '.github' folder does not exist in the reference repository ${{ steps.current_repo_name.outputs.REPO_NAME }}."
+            # Check if there are other repositories to compare against.
+            # The tr command creates a list, grep -v removes the current repo, wc -l counts remaining.
+            other_repos_count=$(echo "$TARGET_REPOS" | tr ' ' '\n' | grep -v -x "${{ steps.current_repo_name.outputs.REPO_NAME }}" | wc -l)
+            if [ "$other_repos_count" -gt 0 ]; then
+              echo "Cannot perform consistency check as the reference .github folder is missing."
+              exit 1
+            else
+              echo "No other target repositories to compare with, and .github is missing in current. Nothing to do."
+              exit 0
+            fi
+          fi
+
+          temp_dir=$(mktemp -d)
+          echo "Temporary directory for checkouts: $temp_dir"
+          trap 'rm -rf "$temp_dir"' EXIT # Cleanup temp directory on exit
+
+          error_found=0
+
+          for repo_full_name in $TARGET_REPOS; do
+            if [ "$repo_full_name" == "${{ steps.current_repo_name.outputs.REPO_NAME }}" ]; then
+              echo "Skipping self-comparison for $repo_full_name"
+              continue
+            fi
+
+            echo "--------------------------------------------------"
+            echo "Checking against target repository: $repo_full_name"
+            
+            target_repo_clone_dir="$temp_dir/$(basename "$repo_full_name")_clone"
+            target_repo_github_path="$target_repo_clone_dir/.github"
+            mkdir -p "$target_repo_clone_dir"
+
+            echo "Cloning $repo_full_name into $target_repo_clone_dir..."
+            if ! git clone --no-checkout --depth 1 --filter=blob:none "https://x-access-token:${GITHUB_TOKEN}@github.com/$repo_full_name.git" "$target_repo_clone_dir"; then
+                echo "Error: Failed to clone $repo_full_name. Skipping."
+                error_found=1
+                continue
+            fi
+
+            ( # Enter subshell for git operations in cloned repo
+              cd "$target_repo_clone_dir"
+              echo "Setting up sparse checkout for .github folder in $repo_full_name..."
+              if ! git sparse-checkout init --cone > /dev/null 2>&1; then
+                echo "Warning: 'git sparse-checkout init --cone' failed, trying without --cone for $repo_full_name."
+                git sparse-checkout init > /dev/null 2>&1
+              fi
+              if ! git sparse-checkout set .github > /dev/null 2>&1; then
+                 echo "Warning: 'git sparse-checkout set .github' failed, trying legacy sparse-checkout for $repo_full_name."
+                 echo ".github" > .git/info/sparse-checkout
+              fi
+              echo "Checking out files for $repo_full_name..."
+              if ! git checkout HEAD > /dev/null 2>&1; then # Checkout default branch
+                  echo "Error: Failed to checkout HEAD for $repo_full_name after sparse-checkout. Skipping."
+                  # Exit subshell with error to prevent diff if checkout failed
+                  exit 1 
+              fi
+            )
+            if [ $? -ne 0 ]; then # Check if subshell exited with an error
+                error_found=1 # Mark error_found if subshell operations failed
+                continue # Skip to next repo
+            fi
+
+
+            if [ ! -d "$target_repo_github_path" ]; then
+              echo "Error: '.github' folder does not exist in $repo_full_name, but it exists in the reference repo ${{ steps.current_repo_name.outputs.REPO_NAME }}."
+              error_found=1
+              continue
+            fi
+
+            echo "Comparing $source_github_path (from ${{ steps.current_repo_name.outputs.REPO_NAME }}) with $target_repo_github_path (from $repo_full_name)"
+            if diff -qr "$source_github_path" "$target_repo_github_path"; then
+              echo ".github folder in $repo_full_name matches the reference."
+            else
+              echo "Error: .github folder in $repo_full_name does NOT match the one in ${{ steps.current_repo_name.outputs.REPO_NAME }}."
+              echo "Differences found (reference vs $repo_full_name):"
+              diff -r "$source_github_path" "$target_repo_github_path" || true # Show diff, || true to not fail the script here
+              error_found=1
+            fi
+          done
+          echo "--------------------------------------------------"
+
+          if [ $error_found -ne 0 ]; then
+            echo "Consistency check failed. One or more repositories do not have a .github folder matching the reference repository (${{ steps.current_repo_name.outputs.REPO_NAME }})."
+            exit 1
+          else
+            echo "Consistency check passed. All checked repositories have a .github folder matching the reference repository (${{ steps.current_repo_name.outputs.REPO_NAME }})."
+          fi
+        env:
+          GIT_TERMINAL_PROMPT: 0 # Disable git prompts
