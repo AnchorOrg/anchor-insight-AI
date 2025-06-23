@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Anchor Insight AI Screen Capture",
+  "version": "1.0.0",
+  "description": "Screen capture integration for Anchor Insight AI behavior analysis",
+  "permissions": [
+    "activeTab",
+    "desktopCapture",
+    "tabs"
+  ],
+  "host_permissions": [
+    "http://localhost:8000/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Anchor Insight AI"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

@@ -200,6 +200,37 @@ async def get_notifications(limit: int = 10):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/screen-capture")
+async def receive_screen_capture(capture_data: Dict[str, Any]):
+    """Receive screen capture from Chrome extension."""
+    if not ai_app:
+        raise HTTPException(status_code=500, detail="AI application not initialized")
+    
+    image_data = capture_data.get("image", "")
+    timestamp = capture_data.get("timestamp", "")
+    tab_url = capture_data.get("tab_url", "")
+    tab_title = capture_data.get("tab_title", "")
+    
+    if not image_data:
+        raise HTTPException(status_code=400, detail="Image data is required")
+    
+    try:
+        # Process the screen capture (this would integrate with the AI models)
+        # For now, just log the receipt
+        logger.info(f"Received screen capture from {tab_url} at {timestamp}")
+        
+        # In a full implementation, you would:
+        # 1. Decode the base64 image
+        # 2. Convert to numpy array
+        # 3. Pass to AI models for analysis
+        # 4. Store results in database
+        
+        return {"message": "Screen capture received successfully", "status": "processed"}
+    except Exception as e:
+        logger.error(f"Error processing screen capture: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/notifications/custom")
 async def send_custom_notification(notification: Dict[str, str]):
     """Send a custom notification."""

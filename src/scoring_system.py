@@ -112,13 +112,13 @@ class ScoringSystem:
         current_time = datetime.utcnow()
         session_duration = (current_time - self.session_start).total_seconds() / 60  # minutes
         
-        # Calculate distraction time from recent history
+        # Calculate time-based metrics from recent history
         recent_scores = [score for score in self.score_history 
                         if (current_time - score['timestamp']).total_seconds() < 300]  # Last 5 minutes
         
         if recent_scores:
             distracted_periods = [score for score in recent_scores 
-                                if score['scores'].get('distraction_score', 100) < 50]
+                                if score.get('individual_scores', {}).get('distraction_score', 100) < 50]
             distraction_time = len(distracted_periods) * (300 / len(recent_scores))  # Approximate minutes
         else:
             distraction_time = 0
