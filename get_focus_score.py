@@ -13,7 +13,7 @@ OPENAI_API_KEY = ""
 USE_HTTP = False
 LOCAL_IMAGE_PATH = r"C:\Users\Administrator\Desktop\QQ20250703-180057.png"
 HTTP_IMAGE_URL = "http://localhost:8080/screen.jpg"
-MODEL_ID = "o3"  # 修正模型名称
+MODEL_ID = "o3"  
 
 PROMPT = (
     "这是一个从用户电脑屏幕截取的图片，请你分析用户此时分心的概率。\n"
@@ -57,39 +57,37 @@ def get_focus_score(img_b64: str) -> int:
             ],
         )
         
-        # 解析响应
         payload = json.loads(response.choices[0].message.content)
         score = payload.get("focus_score", -1)
-        
-        # 确保分数在合理范围内
+
         if isinstance(score, (int, float)) and 0 <= score <= 100:
             return int(score)
         else:
-            print(f"警告：返回的分数不在有效范围内: {score}")
+            print(f"Warning：返回的分数不在有效范围内: {score}")
             return -1
             
     except Exception as e:
-        print(f"错误：{type(e).__name__}: {str(e)}")
+        print(f"Error：{type(e).__name__}: {str(e)}")
         return -1
 
 def main():
     try:
-        print("加载图像...")
+        print("Loading IMG...")
         img_bytes = load_image_bytes()
-        print(f"图像大小: {len(img_bytes)} bytes")
+        print(f"Images Size: {len(img_bytes)} bytes")
         
         img_b64 = image_to_b64(img_bytes)
-        print("发送请求到 OpenAI API...")
+        print("Sending Post to OpenAI API...")
         
         score = get_focus_score(img_b64)
         
         if score >= 0:
             print(f"Focus score: {score}")
         else:
-            print("无法获取有效的专注度分数")
+            print("Don't get the Focus score")
             
     except Exception as e:
-        print(f"程序错误：{type(e).__name__}: {str(e)}")
+        print(f"Program Error：{type(e).__name__}: {str(e)}")
 
 if __name__ == "__main__":
     main()
