@@ -25,6 +25,7 @@ Please delete options that are not relevant.
 - [ ] Fill the info for the project part.
 - [ ] Checklist within the issues to close are all checked.
 - [ ] Self verification with test cases and screenshots, recording as the test evidence if necessary.
+  - QA needs to have evidence to verify the changes. Optional for the developer.
 - [ ] update the parent issue on the deployment date and 
 # ✔️ REVIEW Checklist (By reviewer)
 - [ ] update the review date if takes too much time longer than 2h.
