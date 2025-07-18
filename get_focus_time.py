@@ -66,6 +66,8 @@ class PersonMonitor:
                     if box.cls == 0:  # label of person
                         person_found = True
                         break
+                if person_found:
+                    break
             rendered_frame = result.plot()
         
         return person_found, rendered_frame
