@@ -27,13 +27,14 @@ import logging
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 # Request/Response Models
+
+# move to the config package TODO
 class MonitorConfig(BaseModel):
     show_window: bool = Field(False, description="Whether to show monitoring window")
     model_path: Optional[str] = Field(None, description="Path to YOLO model")
     camera_index: int = Field(0, description="Camera device index")
-
+# move to the model package TODO
 class StatusResponse(BaseModel):
     is_initialized: bool
     person_detected: Optional[bool]
@@ -52,7 +53,7 @@ class TimeRecord(BaseModel):
     end: float
     formatted: str
     duration_minutes: float
-
+# TODO: this should be within the service package.
 class PersonMonitor:
     """Optimized Person Monitor with adaptive frame processing"""
     
@@ -123,6 +124,7 @@ class PersonMonitor:
     def _capture_frames(self):
         """Separate thread for frame capture (optimization)"""
         while self.is_running and not self._stop_event.is_set():
+
             if self.cap is not None:
                 ret, frame = self.cap.read()
                 if ret:
@@ -133,6 +135,7 @@ class PersonMonitor:
                         except Empty:
                             pass
                     self.frame_buffer.put(frame)
+            # TODO: refrain ussages of sleep to wait for the task completion
             time.sleep(0.001)  # Minimal sleep
     
     def format_time_string(self, start_time: float, end_time: float, time_type: str) -> str:
@@ -291,6 +294,15 @@ class PersonMonitor:
         thickness = 2
         
         # Draw status info
+        # TODO: it is very likely this would introduce the performance issue. 
+        # example: 
+        '''
+        when the laod is high,
+        requestA form A user, 
+        reqeustB from B user, 
+        sometimes if we save the data within the service class, then there are possiblities that the data from requestA would change the data for requestB
+        need explanation on how the current impl prevent that issue or code modification.
+        ''' 
         if not self.is_initialized:
             status_text = "Waiting for first detection..."
             status_color = (255, 255, 0)
@@ -471,6 +483,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# TODO: The below should move to a controller class START
 # API Endpoints
 @app.get("/", response_model=Dict[str, Any])
 async def root():
@@ -660,6 +673,7 @@ async def health_check():
                 "timestamp": datetime.now().isoformat()
             }
         )
+# TODO: The above should move to a controller class END
 
 if __name__ == "__main__":
     # Run the FastAPI application

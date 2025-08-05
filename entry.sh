@@ -196,19 +196,13 @@ show_startup_commands() {
     echo -e "${GREEN}1. Main API Gateway (Port 8080) - Layered Architecture:${NC}"
     echo "   pipenv run python src/main_refactored.py"
     echo
-    echo -e "${GREEN}1b. Main API Gateway (Port 8080) - Legacy:${NC}"
-    echo "   pipenv run python src/app/main.py"
-    echo
     echo -e "${GREEN}2. Focus Score Service (Port 8002):${NC}"
     echo "   pipenv run python src/app/get_focus_score.py"
     echo
     echo -e "${GREEN}3. Focus Time Service (Port 8001):${NC}"
     echo "   pipenv run python src/app/get_focus_time.py"
     echo
-    echo -e "${GREEN}4. All services (with new architecture):${NC}"
-    echo "   ./entry.sh --start-all-new"
-    echo
-    echo -e "${GREEN}5. All services (legacy architecture):${NC}"
+    echo -e "${GREEN}4. Start all services:${NC}"
     echo "   ./entry.sh --start-all"
     echo
     echo -e "${BLUE}========================================${NC}"
@@ -221,9 +215,9 @@ show_startup_commands() {
     echo
 }
 
-# Function to start all services with new architecture
-start_all_services_new() {
-    print_status "Starting all services with layered architecture..."
+# Function to start all services
+start_all_services() {
+    print_status "Starting all services..."
     
     # Check if .env file has API key configured
     if grep -q "your_openai_api_key_here" "$PROJECT_DIR/.env" 2>/dev/null; then
@@ -254,48 +248,6 @@ start_all_services_new() {
     echo "$FOCUS_SCORE_PID $FOCUS_TIME_PID $MAIN_API_PID" > "$PROJECT_DIR/.service_pids"
     
     print_success "All services started successfully with layered architecture!"
-    print_status "Architecture: Controller -> Service -> External APIs"
-    print_status "Service PIDs saved to .service_pids"
-    print_status "Use './entry.sh --stop-all' to stop all services"
-    print_status "API Documentation: http://localhost:8080/docs"
-    
-    # Wait for all background processes
-    wait
-}
-
-# Function to start all services
-start_all_services() {
-    print_status "Starting all services..."
-    
-    # Check if .env file has API key configured
-    if grep -q "your_openai_api_key_here" "$PROJECT_DIR/.env" 2>/dev/null; then
-        print_error "Please configure your OPENAI_API_KEY in .env file first"
-        exit 1
-    fi
-    
-    cd "$PROJECT_DIR"
-    
-    # Start services in background
-    print_status "Starting Focus Score Service on port 8002..."
-    pipenv run python src/app/get_focus_score.py &
-    FOCUS_SCORE_PID=$!
-    
-    sleep 2
-    
-    print_status "Starting Focus Time Service on port 8001..."
-    pipenv run python src/app/get_focus_time.py &
-    FOCUS_TIME_PID=$!
-    
-    sleep 2
-    
-    print_status "Starting Main API Gateway on port 8080..."
-    pipenv run python src/app/main.py &
-    MAIN_API_PID=$!
-    
-    # Create PID file for cleanup
-    echo "$FOCUS_SCORE_PID $FOCUS_TIME_PID $MAIN_API_PID" > "$PROJECT_DIR/.service_pids"
-    
-    print_success "All services started successfully!"
     print_status "Service PIDs saved to .service_pids"
     print_status "Use './entry.sh --stop-all' to stop all services"
     print_status "API Documentation: http://localhost:8080/docs"
@@ -329,13 +281,17 @@ show_help() {
     echo
     echo "Options:"
     echo "  --help, -h          Show this help message"
-    echo "  --start-all         Start all services (legacy architecture)"
-    echo "  --start-all-new     Start all services (layered architecture)"
+    echo "  --start-all         Start all services"
     echo "  --stop-all          Stop all services"
-    echo "  --verify            Verify installation only"
+    echo "  --verify            Verify installation"
     echo "  --env-only          Setup .env file only"
     echo
     echo "Default behavior (no options): Complete project setup"
+    echo
+    echo "Quick Start:"
+    echo "  1. ./entry.sh                 # Setup project"
+    echo "  2. Update OPENAI_API_KEY in .env file"
+    echo "  3. ./entry.sh --start-all     # Start all services"
 }
 
 # Main execution logic
@@ -352,10 +308,6 @@ main() {
             ;;
         --start-all)
             start_all_services
-            exit 0
-            ;;
-        --start-all-new)
-            start_all_services_new
             exit 0
             ;;
         --stop-all)

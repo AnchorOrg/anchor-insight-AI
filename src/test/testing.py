@@ -7,7 +7,7 @@ from pathlib import Path
 from datetime import datetime
 from tabulate import tabulate
 import subprocess
-
+# TODO: english
 # 导入get_focus_score模块
 from src.app.get_focus_score import load_image_bytes, image_to_b64, get_focus_score
 

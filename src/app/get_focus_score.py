@@ -15,7 +15,7 @@ import time
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
+# TODO: config package.
 class Settings(BaseSettings):
     openai_api_key: str = Field(..., env="OPENAI_API_KEY")
     model_id: str = Field("gpt-4o-mini", env="MODEL_ID")
