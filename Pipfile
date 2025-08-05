@@ -1,4 +1,5 @@
 # Pipfile
+
 [[source]]
 url = "https://pypi.org/simple"
 verify_ssl = true
@@ -11,6 +12,12 @@ openai = ">=1.23.0"
 python-dotenv = "*"
 pydantic-settings = "*"
 httpx = "*"
+pyautogui = "*"
+Pillow = "*"
+opencv-python = "*"
+numpy = "*"
+ultralytics = "*"
+python-multipart = "*"
 
 [dev-packages]
 

@@ -1,0 +1,19 @@
+// no on this file please help me to compose an item for testing the health endpoint
+
+// we are using hoppscotch
+// TODO: things to do within this file 
+// - add a request to the health endpoint
+// - existing endpoint and let reviewer better to test
+// if possible , please consider add note for the edge test cases.
+{
+  "v": 9,
+  "name": "test",
+  "folders": [],
+  "requests": [],
+  "auth": {
+    "authType": "none",
+    "authActive": true
+  },
+  "headers": [],
+  "_ref_id": "coll_mdxz7ap6_9cf061ab-e460-4555-9708-8b9b1fd4e388"
+}

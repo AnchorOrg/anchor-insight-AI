@@ -52,7 +52,7 @@ class FocusResponse(BaseModel):
 
 class UrlRequest(BaseModel):
     image_url: str = Field(..., description="Public URL of the image to analyze")
-    
+    # TODO: need modification to exclude this usage or provide explanation on why we need something deprecated.
     @validator('image_url')
     def validate_url(cls, v):
         if not v.startswith(('http://', 'https://')):
@@ -174,6 +174,8 @@ async def analyze_from_upload(file: Annotated[UploadFile, File(description="User
         logger.error(f"Error processing uploaded file: {e}")
         raise
 
+# TODO: when we have new endpoints, please consider add these into the spec of directly update the HOPPScotch API collection. From m y understanding , this should be totally deleted. 
+# TODO: delete lessons learned from me: better to have the API request and response updated in the PR or within the hoppscotch first within
 @app.post("/analyze/url", response_model=FocusResponse, summary="Analyze focus by image URL")
 async def analyze_from_url(request: UrlRequest):
     """
@@ -222,7 +224,7 @@ async def analyze_from_url(request: UrlRequest):
         logger.error(f"Error processing URL image: {e}")
         raise
 
-@app.get("/", summary="Health check")
+@app.get("/health", summary="Health check")
 def read_root():
     return {
         "status": "ok", 
@@ -235,7 +237,7 @@ def read_root():
         }
     }
 
-@app.get("/health", summary="Detailed health check")
+@app.get("/health/detail", summary="Detailed health check")
 async def health_check():
     """Perform detailed health check including OpenAI API connectivity"""
     try:

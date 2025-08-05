@@ -516,7 +516,9 @@ if __name__ == "__main__":
     print(f"  - Focus Score Service at {settings.focus_score_service_url}")
     print("\nAPI Documentation available at http://localhost:8080/docs")
     print("\nRequired environment variables:")
+    # TODO: KEY should never printed within the logging. 
     print("  - OPENAI_API_KEY: Your OpenAI API key")
+    # TODO: this is a single backend service, therefore we don't need to expose 3 endpoints but merely 1 service on 1 port to serve differnt endpoints. Updated in the tech spec that we are using fastAPI to do the service serving. 
     print("  - FOCUS_TIME_SERVICE_URL: URL of focus time service (default: http://localhost:8001)")
     print("  - FOCUS_SCORE_SERVICE_URL: URL of focus score service (default: http://localhost:8002)")
     
