@@ -8,7 +8,7 @@ from tabulate import tabulate
 import subprocess
 
 # 导入get_focus_score模块
-from scr.app.get_focus_score import load_image_bytes, image_to_b64, get_focus_score
+from src.app.get_focus_score import load_image_bytes, image_to_b64, get_focus_score
 
 TEST_IMAGES_FOLDER = r"C:\Users\Administrator\Desktop\test_imgs"  # 测试图片文件夹路径
 SUPPORTED_FORMATS = ['.jpg', '.jpeg', '.png', '.bmp', '.gif', '.webp']  # 支持的图片格式
