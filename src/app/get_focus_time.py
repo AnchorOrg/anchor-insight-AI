@@ -53,7 +53,7 @@ class TimeRecord(BaseModel):
     end: float
     formatted: str
     duration_minutes: float
-# TODO: this should be within the service package.
+# TODO: this should be within the service package. the class name should end with Service
 class PersonMonitor:
     """Optimized Person Monitor with adaptive frame processing"""
     
@@ -485,6 +485,7 @@ app = FastAPI(
 
 # TODO: The below should move to a controller class START
 # API Endpoints
+# TODO: this endpoint should be deleted. Either we configure the swagger to show the below info and make that exposed merely in non-prod env or we have hoppscotch to have the below info. 
 @app.get("/", response_model=Dict[str, Any])
 async def root():
     """API information endpoint"""
@@ -499,10 +500,12 @@ async def root():
             "/monitor/records": "Get all time records",
             "/monitor/summary": "Get time summary",
             "/monitor/latest": "Get latest record",
+            # TODO: websocket is totally not needed for now.
             "/ws/monitor": "WebSocket for real-time updates"
         }
     }
 
+# TODO: duplicated code. This feedback would greatly lower the score of this PR
 @app.post("/monitor/start")
 async def start_monitoring(config: MonitorConfig):
     """Start person monitoring"""
@@ -531,7 +534,7 @@ async def start_monitoring(config: MonitorConfig):
     except Exception as e:
         logger.error(f"Failed to start monitoring: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-
+# TODO: this is not needed. since the data would be collected in real time during the focus session.
 @app.post("/monitor/stop")
 async def stop_monitoring():
     """Stop person monitoring"""
@@ -560,7 +563,7 @@ async def stop_monitoring():
     except Exception as e:
         logger.error(f"Failed to stop monitoring: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-
+# TODO: need further explantion on what does the total_records mean . My expectation is that the score might be flowed over time ( example: at the start of the session, 13:00, the socre is 5/5. 13:15 3/5. also , according the issue's requirement, status is not needed and merely score is needed. )
 @app.get("/monitor/status", response_model=StatusResponse)
 async def get_status():
     """Get current monitoring status"""
@@ -572,6 +575,7 @@ async def get_status():
         logger.error(f"Failed to get status: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# TODO: focus time records would be handled by anchor-app
 @app.get("/monitor/records", response_model=List[TimeRecord])
 async def get_records():
     """Get all time records"""

@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         extra = "ignore"
-
+# TODO: need further understanding the concept of how the FastApi implement IoC. Update the spec on this point and apply the solution to the codebase.
 settings = Settings()
 
 app = FastAPI(
@@ -37,6 +37,7 @@ app = FastAPI(
 )
 
 # Allowed image MIME types
+# optional TODO: move to a constant file.
 ALLOWED_MIME_TYPES = {
     "image/jpeg", "image/jpg", "image/png", 
     "image/gif", "image/webp", "image/bmp"
@@ -48,6 +49,7 @@ client = openai.AsyncOpenAI(api_key=settings.openai_api_key)
 class FocusResponse(BaseModel):
     focus_score: int = Field(..., ge=0, le=100, description="Focus score (0-100)")
     confidence: Optional[str] = Field(None, description="Confidence level of the analysis")
+    # TODO: Please let me know what this means
     processing_time: Optional[float] = Field(None, description="Processing time in seconds")
 
 class UrlRequest(BaseModel):
@@ -88,7 +90,7 @@ def retry_on_failure(max_retries: int = 3, delay: int = 2):
             raise last_exception
         return wrapper
     return decorator
-
+# TODO: should move to a service file 
 @retry_on_failure(max_retries=settings.max_retries, delay=settings.retry_delay_seconds)
 async def get_focus_score_from_openai(img_b64: str) -> tuple[int, float]:
     """Asynchronously call OpenAI API and parse focus score with retry logic"""
@@ -135,6 +137,7 @@ async def get_focus_score_from_openai(img_b64: str) -> tuple[int, float]:
         logger.error(f"Unknown error occurred while parsing response: {e}")
         raise HTTPException(status_code=500, detail="Internal processing error")
 
+# TODO: analyze_uploads
 @app.post("/analyze/upload", response_model=FocusResponse, summary="Analyze focus by uploading image")
 async def analyze_from_upload(file: Annotated[UploadFile, File(description="User screenshot file")]):
     """
@@ -224,7 +227,9 @@ async def analyze_from_url(request: UrlRequest):
         logger.error(f"Error processing URL image: {e}")
         raise
 
+# TODO: health controller wanted
 @app.get("/health", summary="Health check")
+# TODO: change to check_health
 def read_root():
     return {
         "status": "ok", 
@@ -238,6 +243,7 @@ def read_root():
     }
 
 @app.get("/health/detail", summary="Detailed health check")
+# TODO: change to check_health_detail
 async def health_check():
     """Perform detailed health check including OpenAI API connectivity"""
     try:
@@ -253,6 +259,7 @@ async def health_check():
         "timestamp": time.time()
     }
 
+# TODO: shoul only have one main file to be regarded as entry.
 if __name__ == "__main__":
     logger.info(f"Starting Focus Score API with model: {settings.model_id}")
     uvicorn.run("main:app", host="127.0.0.1", port=8002, reload=True)

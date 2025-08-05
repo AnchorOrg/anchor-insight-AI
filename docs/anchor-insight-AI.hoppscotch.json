@@ -5,6 +5,7 @@
 // - add a request to the health endpoint
 // - existing endpoint and let reviewer better to test
 // if possible , please consider add note for the edge test cases.
+// command for installing the hoppscotch in windows. `winget install --id=hoppscotch.Hoppscotch  -e`
 {
   "v": 9,
   "name": "test",

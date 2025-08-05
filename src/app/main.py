@@ -21,7 +21,7 @@ from pydantic_settings import BaseSettings
 import openai
 import uvicorn
 import logging
-
+# TODO: make sure that the code structure is aligned to a open source code repo and update the found open source code repo in the spec.  
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -239,6 +239,7 @@ Keep the response concise and actionable."""
         logger.error(f"Error generating suggestion: {e}")
         return f"Unable to generate suggestions at this time. Error: {str(e)}"
 
+# TODO: update the spec to contain HTTP endpoints 
 # API Endpoints
 @app.get("/")
 async def root():
@@ -261,7 +262,7 @@ async def root():
             "focus_score": settings.focus_score_service_url
         }
     }
-
+# TODO: just read this message. the below code I didn't read for the reason that it is obviously duplicated.
 @app.post("/analyze", response_model=AnalysisResponse)
 async def analyze_focus(request: AnalysisRequest = AnalysisRequest()):
     """Comprehensive focus analysis with performance optimization"""

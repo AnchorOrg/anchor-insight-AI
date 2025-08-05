@@ -17,7 +17,7 @@ from ..config.settings import settings
 
 logger = logging.getLogger(__name__)
 
-
+# TODO:  the below are merely for reference epurpose. culd be dleted.
 class FocusController:
     """Controller for focus-related API endpoints"""
     

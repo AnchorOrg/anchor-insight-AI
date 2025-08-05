@@ -1,5 +1,6 @@
 #!/bin/bash
-
+# TODO: the below code is merley for reference purpose, the main goal of this file is to have this code repo run up with ease 
+# TODO: please balance this solution or using a Dockerfile to run the code.
 # ========================================
 # Anchor Insight AI - Project Setup Script
 # ========================================
@@ -193,8 +194,8 @@ show_startup_commands() {
     echo -e "${BLUE}     SERVICE STARTUP COMMANDS         ${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo
-    echo -e "${GREEN}1. Main API Gateway (Port 8080) - Layered Architecture:${NC}"
-    echo "   pipenv run python src/main_refactored.py"
+    echo -e "${GREEN}1. Main API Gateway (Port 8080):${NC}"
+    echo "   pipenv run python src/app/main.py"
     echo
     echo -e "${GREEN}2. Focus Score Service (Port 8002):${NC}"
     echo "   pipenv run python src/app/get_focus_score.py"
@@ -202,7 +203,7 @@ show_startup_commands() {
     echo -e "${GREEN}3. Focus Time Service (Port 8001):${NC}"
     echo "   pipenv run python src/app/get_focus_time.py"
     echo
-    echo -e "${GREEN}4. Start all services:${NC}"
+    echo -e "${GREEN}4. All services in one command:${NC}"
     echo "   ./entry.sh --start-all"
     echo
     echo -e "${BLUE}========================================${NC}"
@@ -240,14 +241,14 @@ start_all_services() {
     
     sleep 2
     
-    print_status "Starting Main API Gateway (Layered Architecture) on port 8080..."
-    pipenv run python src/main_refactored.py &
+    print_status "Starting Main API Gateway on port 8080..."
+    pipenv run python src/app/main.py &
     MAIN_API_PID=$!
     
     # Create PID file for cleanup
     echo "$FOCUS_SCORE_PID $FOCUS_TIME_PID $MAIN_API_PID" > "$PROJECT_DIR/.service_pids"
     
-    print_success "All services started successfully with layered architecture!"
+    print_success "All services started successfully!"
     print_status "Service PIDs saved to .service_pids"
     print_status "Use './entry.sh --stop-all' to stop all services"
     print_status "API Documentation: http://localhost:8080/docs"
