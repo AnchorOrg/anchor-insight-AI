@@ -1,12 +1,13 @@
-"""
-Data models for focus monitoring
-"""
+"""Data models for focus monitoring"""
+
 from typing import Optional, Dict, Any
-from pydantic import BaseModel, Field, field_validator
+
+from pydantic import BaseModel, Field
 
 
 class StatusResponse(BaseModel):
     """Response model for monitoring status"""
+
     is_initialized: bool
     person_detected: Optional[bool]
     current_session: Optional[Dict[str, Any]]
@@ -15,6 +16,7 @@ class StatusResponse(BaseModel):
 
 class SummaryResponse(BaseModel):
     """Response model for time tracking summary"""
+
     total_focus_minutes: float
     total_leave_minutes: float
     focus_sessions: int
@@ -23,6 +25,7 @@ class SummaryResponse(BaseModel):
 
 class TimeRecord(BaseModel):
     """Model for individual time record"""
+
     type: str
     start: float
     end: float
@@ -32,11 +35,25 @@ class TimeRecord(BaseModel):
 
 class FocusScoreResponse(BaseModel):
     """Response model for focus score"""
-    focus_score: int = Field(..., ge=0, le=100, description="Focus score (0-100)")
-    confidence: Optional[str] = Field(None, description="Confidence level of the analysis")
+
+    score: float = Field(..., ge=0, le=100, description="Focus score (0-100)")
+    confidence: Optional[str] = Field(
+        None, description="Confidence level of the analysis"
+    )
     processing_time: Optional[float] = Field(
-        None, 
-        description="Total processing time in seconds from request initiation to response completion. Includes image encoding, OpenAI API call latency, response parsing, and network overhead. Used for performance monitoring, API optimization, and user experience analysis."
+        None,
+        description=(
+            "Total processing time in seconds from request initiation to "
+            "response completion. Includes image encoding, OpenAI API call "
+            "latency, response parsing, and network overhead. Used for "
+            "performance monitoring, API optimization, and user experience analysis."
+        ),
+    )
+    timestamp: Optional[str] = Field(
+        None, description="ISO timestamp when the score was generated"
+    )
+    session_duration_minutes: Optional[float] = Field(
+        None, description="Duration of the current session in minutes"
     )
 
 
@@ -47,6 +64,7 @@ class FocusScoreResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     """Response model for health check"""
+
     status: str
     monitoring_active: bool
     timestamp: str
@@ -54,6 +72,7 @@ class HealthResponse(BaseModel):
 
 class MonitorStartResponse(BaseModel):
     """Response model for starting monitoring"""
+
     status: str
     message: str
     config: Dict[str, Any]
@@ -61,6 +80,7 @@ class MonitorStartResponse(BaseModel):
 
 class MonitorStopResponse(BaseModel):
     """Response model for stopping monitoring"""
+
     status: str
     message: str
     final_stats: Dict[str, Any]
@@ -68,5 +88,7 @@ class MonitorStopResponse(BaseModel):
 
 class LatestRecordResponse(BaseModel):
     """Response model for latest record"""
+
     latest_record: Optional[str] = None
     message: Optional[str] = None
+

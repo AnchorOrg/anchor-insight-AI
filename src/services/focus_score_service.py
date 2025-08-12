@@ -61,7 +61,7 @@ class FocusScoreService:
             img_b64: Base64 encoded image string
             
         Returns:
-            Tuple of (focus_score, processing_time)
+            Tuple of (score, processing_time)
             
         Raises:
             HTTPException: For API errors or invalid responses
@@ -90,8 +90,10 @@ class FocusScoreService:
             )
             
             payload = response.choices[0].message.model_dump()
-            score_data = openai.pydantic_v1.parse_raw_as(FocusScoreResponse, payload['content'])
-            score = score_data.focus_score
+            score_data = openai.pydantic_v1.parse_raw_as(
+                FocusScoreResponse, payload["content"]
+            )
+            score = score_data.score
 
             if not (0 <= score <= 100):
                 raise ValueError(f"Returned score is out of valid range: {score}")
@@ -145,9 +147,9 @@ class FocusScoreService:
             score, processing_time = await self.analyze_image_base64(img_b64)
             
             return FocusScoreResponse(
-                focus_score=score,
+                score=score,
                 confidence=CONFIDENCE_HIGH if 0 <= score <= 100 else CONFIDENCE_LOW,
-                processing_time=processing_time
+                processing_time=processing_time,
             )
         except Exception as e:
             logger.error(f"Error processing uploaded file: {e}")

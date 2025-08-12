@@ -126,18 +126,20 @@ async def get_focus_score(session_id: str = "default"):
         if monitor is None:
             raise HTTPException(status_code=404, detail=f"Session {session_id} not found")
         
-        score = monitor.get_focus_score()
+        raw_score = monitor.get_focus_score()
         status = monitor.get_current_status()
         
         # Calculate session duration
         session_duration = 0.0
         if status.get('current_session'):
-            session_duration = status['current_session'].get('duration_minutes', 0.0)
-        
+            session_duration = status['current_session'].get(
+                'duration_minutes', 0.0
+            )
+
         return FocusScoreResponse(
-            score=score,
+            score=raw_score * 20,  # Convert 0-5 scale to 0-100
             timestamp=datetime.now().isoformat(),
-            session_duration_minutes=session_duration
+            session_duration_minutes=session_duration,
         )
     except Exception as e:
         logger.error(f"Failed to get focus score: {e}")
