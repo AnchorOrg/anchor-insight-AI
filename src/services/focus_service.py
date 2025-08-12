@@ -6,6 +6,7 @@ import time
 import numpy as np
 import logging
 from datetime import datetime
+from enum import Enum
 from ultralytics import YOLO
 from typing import Optional, Tuple, List, Dict, Any
 from threading import Thread, Lock, Event
@@ -13,6 +14,17 @@ from queue import Queue, Empty
 from src.config.settings import app_settings
 
 logger = logging.getLogger(__name__)
+
+
+class MonitorStatus(Enum):
+    """Enumeration for monitor status messages and colors"""
+    WAITING_DETECTION = ("Waiting for first detection...", (255, 255, 0))  # Yellow
+    PERSON_DETECTED = ("Person: Detected", (0, 255, 0))  # Green
+    PERSON_NOT_DETECTED = ("Person: Not Detected", (0, 0, 255))  # Red
+    
+    def __init__(self, text: str, color: Tuple[int, int, int]):
+        self.text = text
+        self.color = color
 
 
 class PersonMonitorService:
@@ -270,15 +282,13 @@ class PersonMonitorService:
         # Draw session info
         cv2.putText(frame, f"Session: {self.session_id}", (10, 20), font, font_scale, (255, 255, 255), thickness)
         
-        # Draw status info
+        # Draw status info using enum
         if not self.is_initialized:
-            status_text = "Waiting for first detection..."
-            status_color = (255, 255, 0)
+            status = MonitorStatus.WAITING_DETECTION
         else:
-            status_text = "Person: Detected" if self.previous_person_state else "Person: Not Detected"
-            status_color = (0, 255, 0) if self.previous_person_state else (0, 0, 255)
+            status = MonitorStatus.PERSON_DETECTED if self.previous_person_state else MonitorStatus.PERSON_NOT_DETECTED
         
-        cv2.putText(frame, status_text, (10, 50), font, font_scale, status_color, thickness)
+        cv2.putText(frame, status.text, (10, 50), font, font_scale, status.color, thickness)
         
         # Show current time tracking
         if self.focus_start_time is not None:
