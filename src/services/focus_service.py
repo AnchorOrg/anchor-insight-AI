@@ -11,7 +11,7 @@ from ultralytics import YOLO
 from typing import Optional, Tuple, List, Dict, Any
 from threading import Thread, Lock, Event
 from queue import Queue, Empty
-from src.config.settings import app_settings
+from src.config.settings import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -34,9 +34,10 @@ class PersonMonitorService:
         """Initialize the person monitor with performance optimizations"""
         # Session management
         self.session_id = session_id
-        
+
         # Model and camera
-        self.model = YOLO(model_path or app_settings.default_model_path)
+        settings = get_settings()
+        self.model = YOLO(model_path or settings.default_model_path)
         self.camera_index = camera_index
         self.cap = None
         self._camera_lock = Lock()
@@ -61,14 +62,14 @@ class PersonMonitorService:
         # Display settings
         self.window_name = f"YOLOv11-Pose Person Monitor - {session_id}"
         self.show_window = False
-        
+
         # Performance optimization
-        self.target_fps = app_settings.target_fps
+        self.target_fps = settings.target_fps
         self.frame_time = 1.0 / self.target_fps
         self.last_process_time = 0
-        
+
         # Frame buffer for smooth processing
-        self.frame_buffer = Queue(maxsize=app_settings.frame_buffer_size)
+        self.frame_buffer = Queue(maxsize=settings.frame_buffer_size)
         self.capture_thread = None
         
     def _init_camera(self) -> bool:
@@ -83,8 +84,8 @@ class PersonMonitorService:
                 return False
                 
             # Optimize camera settings for performance
-            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, app_settings.camera_width)
-            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, app_settings.camera_height)
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, get_settings().camera_width)
+            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, get_settings().camera_height)
             self.cap.set(cv2.CAP_PROP_FPS, 60)  # Set camera FPS
             self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)  # Reduce buffer for real-time
             
@@ -135,14 +136,15 @@ class PersonMonitorService:
     def detect_person(self, frame: np.ndarray) -> Tuple[bool, np.ndarray]:
         """Detect person in frame using YOLO"""
         # Use settings from config
+        settings = get_settings()
         results = self.model(
-            frame, 
-            stream=True, 
-            verbose=False, 
-            save=False, 
-            conf=app_settings.confidence_threshold, 
-            iou=app_settings.iou_threshold, 
-            device='0', 
+            frame,
+            stream=True,
+            verbose=False,
+            save=False,
+            conf=settings.confidence_threshold,
+            iou=settings.iou_threshold,
+            device='0',
             half=False
         )
         person_found = False
@@ -158,66 +160,47 @@ class PersonMonitorService:
         
         return person_found, rendered_frame
     
+    def _append_record(self, block_type: str, start_ts: float, end_ts: float) -> str:
+        """Central helper to append a time block record."""
+        formatted = self.format_time_string(start_ts, end_ts, block_type.capitalize())
+        with self._records_lock:
+            self.time_records.append({
+                'type': block_type,
+                'start': start_ts,
+                'end': end_ts,
+                'formatted': formatted,
+                'session_id': self.session_id
+            })
+        logger.info(f"[{datetime.now().strftime('%H:%M:%S')}] Session {self.session_id}: {formatted}")
+        return formatted
+
     def update_time_tracking(self, person_detected: bool) -> Optional[str]:
-        """Update time tracking based on person detection"""
+        """Update time tracking based on person detection state transitions."""
         current_time = time.time()
-        time_record = None
-        
-        # Initial state handling
+        # Initial: wait for first detection to start tracking focus block
         if not self.is_initialized:
             if person_detected:
                 self.is_initialized = True
                 self.focus_start_time = current_time
                 self.previous_person_state = True
-                logger.info(f"[{datetime.now().strftime('%H:%M:%S')}] Session {self.session_id} initialized, starting focus time tracking")
+                logger.info(f"Session {self.session_id} initialized -> focus block started")
             return None
-        
-        # State change detection
+
+        produced = None
         if self.previous_person_state is not None:
-            if person_detected and not self.previous_person_state:
-                # Person returned, end leave time, start focus time
-                if self.leave_start_time is not None:
-                    time_record = self.format_time_string(
-                        self.leave_start_time, 
-                        current_time, 
-                        "Leave"
-                    )
-                    with self._records_lock:
-                        self.time_records.append({
-                            'type': 'leave',
-                            'start': self.leave_start_time,
-                            'end': current_time,
-                            'formatted': time_record,
-                            'session_id': self.session_id
-                        })
-                    logger.info(f"[{datetime.now().strftime('%H:%M:%S')}] Session {self.session_id}: {time_record}")
-                
-                self.focus_start_time = current_time
+            # Transition: leave -> focus
+            if person_detected and not self.previous_person_state and self.leave_start_time is not None:
+                produced = self._append_record('leave', self.leave_start_time, current_time)
                 self.leave_start_time = None
-                
-            elif not person_detected and self.previous_person_state:
-                # Person left, end focus time, start leave time
-                if self.focus_start_time is not None:
-                    time_record = self.format_time_string(
-                        self.focus_start_time, 
-                        current_time, 
-                        "Focus"
-                    )
-                    with self._records_lock:
-                        self.time_records.append({
-                            'type': 'focus',
-                            'start': self.focus_start_time,
-                            'end': current_time,
-                            'formatted': time_record,
-                            'session_id': self.session_id
-                        })
-                    logger.info(f"[{datetime.now().strftime('%H:%M:%S')}] Session {self.session_id}: {time_record}")
-                
-                self.leave_start_time = current_time
+                self.focus_start_time = current_time
+            # Transition: focus -> leave
+            elif (not person_detected) and self.previous_person_state and self.focus_start_time is not None:
+                produced = self._append_record('focus', self.focus_start_time, current_time)
                 self.focus_start_time = None
-        
+                self.leave_start_time = current_time
+
         self.previous_person_state = person_detected
-        return time_record
+        return produced
     
     def monitor_loop(self):
         """Optimized monitoring loop with adaptive frame processing"""
@@ -331,34 +314,11 @@ class PersonMonitorService:
         final_record = None
         
         if self.focus_start_time is not None:
-            final_record = self.format_time_string(
-                self.focus_start_time, 
-                current_time, 
-                "Focus"
-            )
-            with self._records_lock:
-                self.time_records.append({
-                    'type': 'focus',
-                    'start': self.focus_start_time,
-                    'end': current_time,
-                    'formatted': final_record,
-                    'session_id': self.session_id
-                })
-            
+            final_record = self._append_record('focus', self.focus_start_time, current_time)
+            self.focus_start_time = None
         elif self.leave_start_time is not None:
-            final_record = self.format_time_string(
-                self.leave_start_time, 
-                current_time, 
-                "Leave"
-            )
-            with self._records_lock:
-                self.time_records.append({
-                    'type': 'leave',
-                    'start': self.leave_start_time,
-                    'end': current_time,
-                    'formatted': final_record,
-                    'session_id': self.session_id
-                })
+            final_record = self._append_record('leave', self.leave_start_time, current_time)
+            self.leave_start_time = None
         
         self._release_camera()
         logger.info(f"Monitoring stopped for session {self.session_id}")

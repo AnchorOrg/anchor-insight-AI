@@ -9,7 +9,6 @@ from typing import Tuple
 from functools import wraps
 
 import openai
-import httpx
 from fastapi import HTTPException
 
 from src.config.settings import FocusScoreSettings
@@ -105,7 +104,7 @@ class FocusScoreService:
             logger.error(f"OpenAI API Error: {e}")
             raise HTTPException(status_code=502, detail="External API service error")
         except Exception as e:
-            logger.error(f"Unknown error occurred while parsing response: {e}")
+            logger.error(f"Unexpected error analyzing image: {e}")
             raise HTTPException(status_code=500, detail="Internal processing error")
     
     async def analyze_uploaded_file(self, file_content: bytes, content_type: str) -> FocusScoreResponse:

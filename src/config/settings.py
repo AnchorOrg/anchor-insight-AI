@@ -2,6 +2,7 @@
 Configuration settings for the anchor-insight-AI application
 """
 from typing import Optional
+from functools import lru_cache
 from pydantic import BaseModel, Field, field_validator, ConfigDict
 from pydantic_settings import BaseSettings
 
@@ -101,16 +102,17 @@ class AppSettings(BaseSettings):
     iou_threshold: float = Field(default=0.45, description="YOLO IoU threshold")
 
 
-# Global settings instances
-app_settings = AppSettings()
-focus_score_settings = FocusScoreSettings()
-
-
+@lru_cache(maxsize=1)
 def get_settings() -> AppSettings:
-    """Get the global application settings instance."""
-    return app_settings
+    """Cached application settings (singleton per process)."""
+    return AppSettings()
 
 
+@lru_cache(maxsize=1)
 def get_focus_score_settings() -> FocusScoreSettings:
-    """Get the global focus score settings instance."""
-    return focus_score_settings
+    """Cached focus score settings (singleton per process)."""
+    return FocusScoreSettings()
+
+# Backwards-compatible aliases (DEPRECATED: prefer calling the functions)
+app_settings = get_settings()
+focus_score_settings = get_focus_score_settings()
