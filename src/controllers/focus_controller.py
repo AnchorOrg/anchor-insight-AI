@@ -61,144 +61,198 @@ async def start_monitoring(config: MonitorConfig, session_id: str = "default"):
             config=config.dict()
         )
     except Exception as e:
-        logger.error(f"Failed to start monitoring: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        """Focus monitoring API controller implementation."""
+        import asyncio
+        import logging
+        from datetime import datetime
+        from typing import Dict, Any, List, Optional
 
+        from fastapi import APIRouter, HTTPException
 
-@focus_router.post("/stop", response_model=MonitorStopResponse)
-async def stop_monitoring(session_id: str = "default"):
-    """Stop person monitoring for a specific session"""
-    try:
-        monitor = session_manager.get_session(session_id)
-        if monitor is None:
-            return JSONResponse(
-                status_code=400,
-                content={"error": f"No monitoring session found for {session_id}"}
-            )
-        
-        if not monitor.is_running:
-            return JSONResponse(
-                status_code=400,
-                content={"error": f"Monitoring is not running for session {session_id}"}
-            )
-        
-        # Get final stats before stopping
-        final_stats = monitor.get_summary_stats()
-        
-        # Stop monitoring
-        await asyncio.get_event_loop().run_in_executor(
-            None, monitor.stop
+        from src.config.settings import MonitorConfig
+        from src.models.focus_models import (
+            StatusResponse, SummaryResponse, TimeRecord, FocusScoreResponse,
+            HealthResponse, MonitorStartResponse, MonitorStopResponse, LatestRecordResponse
         )
-        
-        # Remove session
-        session_manager.remove_session(session_id)
-        
-        return MonitorStopResponse(
-            status="stopped",
-            message=f"Monitoring stopped successfully for session {session_id}",
-            final_stats=final_stats
-        )
-    except Exception as e:
-        logger.error(f"Failed to stop monitoring: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        from src.services.focus_service import session_manager, PersonMonitorService
+
+        logger = logging.getLogger(__name__)
+
+        focus_router = APIRouter(prefix="/monitor", tags=["monitor"])
 
 
-@focus_router.get("/status", response_model=StatusResponse)
-async def get_status(session_id: str = "default"):
-    """Get current monitoring status for a specific session"""
-    try:
-        monitor = session_manager.get_session(session_id)
-        if monitor is None:
-            raise HTTPException(status_code=404, detail=f"Session {session_id} not found")
-        
-        status = monitor.get_current_status()
-        return StatusResponse(**status)
-    except Exception as e:
-        logger.error(f"Failed to get status: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        def _get_session_or_404(session_id: str) -> PersonMonitorService:
+            monitor = session_manager.get_session(session_id)
+            if monitor is None:
+                raise HTTPException(status_code=404, detail=f"Session '{session_id}' not found")
+            return monitor
 
 
-@focus_router.get("/score", response_model=FocusScoreResponse)
-async def get_focus_score(session_id: str = "default"):
-    """Get current focus score for a specific session"""
-    try:
-        monitor = session_manager.get_session(session_id)
-        if monitor is None:
-            raise HTTPException(status_code=404, detail=f"Session {session_id} not found")
-        
-        score = monitor.get_focus_score()
-        status = monitor.get_current_status()
-        
-        # Calculate session duration
-        session_duration = 0.0
-        if status.get('current_session'):
-            session_duration = status['current_session'].get('duration_minutes', 0.0)
-        
-        return FocusScoreResponse(
-            score=score,
-            timestamp=datetime.now().isoformat(),
-            session_duration_minutes=session_duration
-        )
-    except Exception as e:
-        logger.error(f"Failed to get focus score: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        def _create_or_get_session(session_id: str, config: MonitorConfig) -> PersonMonitorService:
+            monitor = session_manager.get_session(session_id)
+            if monitor is None:
+                monitor = session_manager.create_session(
+                    session_id=session_id,
+                    model_path=config.model_path,
+                    camera_index=config.camera_index
+                )
+            return monitor
 
 
-@focus_router.get("/records", response_model=List[TimeRecord])
-async def get_records(session_id: str = "default"):
-    """Get all time records for a specific session"""
-    try:
-        monitor = session_manager.get_session(session_id)
-        if monitor is None:
-            raise HTTPException(status_code=404, detail=f"Session {session_id} not found")
-        
-        records = monitor.get_all_records()
-        
-        # Convert to response model
-        return [
-            TimeRecord(
-                type=record['type'],
-                start=record['start'],
-                end=record['end'],
-                formatted=record['formatted'],
-                duration_minutes=(record['end'] - record['start']) / 60
-            )
-            for record in records
-        ]
-    except Exception as e:
-        logger.error(f"Failed to get records: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        @focus_router.post("/start", response_model=MonitorStartResponse)
+        async def start_monitoring(config: MonitorConfig, session_id: str = "default"):
+            try:
+                monitor = _create_or_get_session(session_id, config)
+                if monitor.is_running:
+                    return MonitorStartResponse(status="already_running", message=f"Session {session_id} already running", config=config.dict())
+                await asyncio.get_event_loop().run_in_executor(None, monitor.start, config.show_window)
+                return MonitorStartResponse(status="started", message=f"Monitoring started for session {session_id}", config=config.dict())
+            except Exception as e:
+                logger.exception("Failed to start monitoring")
+                raise HTTPException(status_code=500, detail=str(e))
 
 
-@focus_router.get("/summary", response_model=SummaryResponse)
-async def get_summary(session_id: str = "default"):
-    """Get time tracking summary for a specific session"""
-    try:
-        monitor = session_manager.get_session(session_id)
-        if monitor is None:
-            raise HTTPException(status_code=404, detail=f"Session {session_id} not found")
-        
-        summary = monitor.get_summary_stats()
-        return SummaryResponse(**summary)
-    except Exception as e:
-        logger.error(f"Failed to get summary: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        @focus_router.post("/stop", response_model=MonitorStopResponse)
+        async def stop_monitoring(session_id: str = "default"):
+            try:
+                monitor = _get_session_or_404(session_id)
+                if not monitor.is_running:
+                    return MonitorStopResponse(status="not_running", message=f"Session {session_id} not running", final_stats=monitor.get_summary_stats())
+                monitor.stop()
+                return MonitorStopResponse(status="stopped", message=f"Monitoring stopped for session {session_id}", final_stats=monitor.get_summary_stats())
+            except HTTPException:
+                raise
+            except Exception as e:
+                logger.exception("Failed to stop monitoring")
+                raise HTTPException(status_code=500, detail=str(e))
 
 
-@focus_router.get("/latest", response_model=LatestRecordResponse)
-async def get_latest_record(session_id: str = "default"):
-    """Get latest time record for a specific session"""
-    try:
-        monitor = session_manager.get_session(session_id)
-        if monitor is None:
-            raise HTTPException(status_code=404, detail=f"Session {session_id} not found")
-        
-        record = monitor.get_latest_record()
-        
-        if record is None:
-            return LatestRecordResponse(message="No new records available")
-        
-        return LatestRecordResponse(latest_record=record)
+        @focus_router.get("/status", response_model=StatusResponse)
+        async def get_status(session_id: str = "default"):
+            try:
+                monitor = _get_session_or_404(session_id)
+                status = monitor.get_current_status()
+                return StatusResponse(
+                    is_initialized=monitor.is_initialized,
+                    person_detected=status.get("person_detected"),
+                    current_session={"session_id": session_id, "running": monitor.is_running},
+                    total_records=len(monitor.get_all_records()),
+                )
+            except HTTPException:
+                raise
+            except Exception as e:
+                logger.exception("Failed to get status")
+                raise HTTPException(status_code=500, detail=str(e))
+
+
+        @focus_router.get("/score", response_model=FocusScoreResponse)
+        async def get_focus_score(session_id: str = "default"):
+            try:
+                monitor = _get_session_or_404(session_id)
+                # Original monitor score scale 0-5; convert to 0-100 for unified response
+                raw_score = monitor.get_focus_score()
+                normalized = max(0.0, min(raw_score / 5 * 100, 100))
+                confidence = "high" if normalized >= 70 else "low"
+                return FocusScoreResponse(focus_score=int(normalized), confidence=confidence, processing_time=None)
+            except HTTPException:
+                raise
+            except Exception as e:
+                logger.exception("Failed to get focus score")
+                raise HTTPException(status_code=500, detail=str(e))
+
+
+        @focus_router.get("/records", response_model=List[TimeRecord])
+        async def get_records(session_id: str = "default"):
+            try:
+                monitor = _get_session_or_404(session_id)
+                records = monitor.get_all_records()
+                return [
+                    TimeRecord(
+                        type=r["type"],
+                        start=r["start"],
+                        end=r["end"],
+                        formatted=r.get("formatted", ""),
+                        duration_minutes=(r["end"] - r["start"]) / 60 if r.get("end") and r.get("start") else 0.0,
+                    ) for r in records
+                ]
+            except HTTPException:
+                raise
+            except Exception as e:
+                logger.exception("Failed to get records")
+                raise HTTPException(status_code=500, detail=str(e))
+
+
+        @focus_router.get("/summary", response_model=SummaryResponse)
+        async def get_summary(session_id: str = "default"):
+            try:
+                monitor = _get_session_or_404(session_id)
+                stats = monitor.get_summary_stats()
+                return SummaryResponse(
+                    total_focus_minutes=stats.get("total_focus_minutes", 0.0),
+                    total_leave_minutes=stats.get("total_leave_minutes", 0.0),
+                    focus_sessions=stats.get("focus_sessions", 0),
+                    leave_sessions=stats.get("leave_sessions", 0),
+                )
+            except HTTPException:
+                raise
+            except Exception as e:
+                logger.exception("Failed to get summary")
+                raise HTTPException(status_code=500, detail=str(e))
+
+
+        @focus_router.get("/latest", response_model=LatestRecordResponse)
+        async def get_latest_record(session_id: str = "default"):
+            try:
+                monitor = _get_session_or_404(session_id)
+                latest = monitor.get_latest_record()
+                return LatestRecordResponse(latest_record=latest, message="ok" if latest else "no records")
+            except HTTPException:
+                raise
+            except Exception as e:
+                logger.exception("Failed to get latest record")
+                raise HTTPException(status_code=500, detail=str(e))
+
+
+        @focus_router.get("/health", response_model=HealthResponse)
+        async def health_check():
+            try:
+                # Basic aggregated monitoring health
+                active_sessions = session_manager.list_sessions()
+                monitoring_active = any(
+                    (session_manager.get_session(s) and session_manager.get_session(s).is_running)
+                    for s in active_sessions
+                )
+                return HealthResponse(
+                    status="ok",
+                    monitoring_active=monitoring_active,
+                    timestamp=datetime.utcnow().isoformat()
+                )
+            except Exception as e:
+                logger.exception("Health check failed")
+                raise HTTPException(status_code=500, detail=str(e))
+
+
+        @focus_router.get("/sessions")
+        async def list_sessions():
+            try:
+                return {"sessions": session_manager.list_sessions()}
+            except Exception as e:
+                logger.exception("Failed to list sessions")
+                raise HTTPException(status_code=500, detail=str(e))
+
+
+        @focus_router.delete("/session/{session_id}")
+        async def remove_session(session_id: str):
+            try:
+                success = session_manager.remove_session(session_id)
+                if not success:
+                    raise HTTPException(status_code=404, detail=f"Session '{session_id}' not found")
+                return {"status": "removed", "session_id": session_id}
+            except HTTPException:
+                raise
+            except Exception as e:
+                logger.exception("Failed to remove session")
+                raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
         logger.error(f"Failed to get latest record: {e}")
         raise HTTPException(status_code=500, detail=str(e))

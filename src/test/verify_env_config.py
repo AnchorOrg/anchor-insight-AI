@@ -68,10 +68,10 @@ def main():
     print(f"   Retry Delay: {focus_score_settings.retry_delay_seconds}s")
     
     print("\n✅ Configuration verification complete!")
-    print("\n🚀 To start the service:")
-    print("   pipenv run python src/main_refactored.py")
-    print("   # or")
-    print(f"   pipenv run uvicorn src.main_refactored:app --host {app_settings.api_host} --port {app_settings.api_port} {'--reload' if app_settings.api_reload else ''}")
+    print("\n🚀 To start the unified service:")
+    print("   pipenv run python src/main.py")
+    print("   # or (explicit uvicorn)")
+    print(f"   pipenv run uvicorn src.main:app --host {app_settings.api_host} --port {app_settings.api_port} {'--reload' if app_settings.api_reload else ''}")
 
 if __name__ == "__main__":
     main()
