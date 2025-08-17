@@ -15,9 +15,7 @@ from src.models.focus_models import (
 from src.services.focus_service import session_manager, PersonMonitorService
 
 logger = logging.getLogger(__name__)
-
 focus_router = APIRouter(prefix="/monitor", tags=["monitor"])
-
 
 def handle_exceptions(func):
     """Decorator to wrap endpoint exceptions into HTTP 500 while preserving explicit HTTPException."""
