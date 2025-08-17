@@ -15,14 +15,11 @@ Architecture:
 import logging
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from src.config.settings import get_settings
 from src.controllers.focus_controller import focus_router
 from src.controllers.focus_score_controller import focus_score_router
-
 
 # Configure logging
 logging.basicConfig(
@@ -30,7 +27,6 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
@@ -49,7 +45,6 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     
     # Shutdown
     logger.info("Shutting down Anchor Insight AI unified service")
-
 
 # Create unified FastAPI application
 API_VERSION = "1.0.0"
@@ -76,7 +71,6 @@ app.add_middleware(
 app.include_router(focus_router, prefix=API_PREFIX)
 app.include_router(focus_score_router, prefix=API_PREFIX)
 
-
 @app.get("/")
 async def root():
     """Root endpoint returning service metadata."""
@@ -87,18 +81,16 @@ async def root():
         "routes": ["/api/v1/monitor", "/api/v1/analyze"],
     }
 
-
 @app.get("/health")
 async def health_check():
     """Simple liveness probe."""
     return {"status": "healthy", "version": API_VERSION}
 
-
 if __name__ == "__main__":
     import uvicorn
     settings = get_settings()
     uvicorn.run(
-        "src.main_refactored:app",
+        "src.main:app",
         host=settings.api_host,
         port=settings.api_port,
         reload=settings.api_reload,

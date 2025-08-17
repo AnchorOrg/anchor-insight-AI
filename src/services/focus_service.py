@@ -153,7 +153,7 @@ class PersonMonitorService:
         for result in results:
             if result.boxes is not None:
                 for box in result.boxes:
-                    if box.cls == 0:  # Person class
+                    if int(box.cls) == 0:  # Person class
                         person_found = True
                         break
             rendered_frame = result.plot()

@@ -14,6 +14,7 @@ from src.models.focus_models import (
 )
 from src.services.focus_service import session_manager, PersonMonitorService
 
+# INit
 logger = logging.getLogger(__name__)
 focus_router = APIRouter(prefix="/monitor", tags=["monitor"])
 
@@ -70,7 +71,7 @@ async def start_monitoring(config: MonitorConfig, session_id: str = "default"):
     monitor = _ensure_session(session_id, config)
     # Start asynchronously; if camera fails we still mark started logically
     try:
-        await asyncio.get_event_loop().run_in_executor(None, monitor.start, config.show_window)
+        await asyncio.get_running_loop().run_in_executor(None, monitor.start, config.show_window)
     except Exception as e:  # degrade gracefully for headless test environments
         logger.warning("Monitor start encountered error (continuing): %s", e)
     return MonitorStartResponse(status="started", message=f"Monitoring started for session {session_id}", config=config.dict())
@@ -120,7 +121,7 @@ async def get_records(session_id: str = "default"):
             start=r['start'],
             end=r['end'],
             formatted=r.get('formatted', ''),
-            duration_minutes=(r['end'] - r['start']) / 60 if r.get('end') and r.get('start') else 0.0
+            duration_minutes=(r['end'] - r['start']) / 60 if r.get('end') is not None and r.get('start') is not None else 0.0
         ))
     return out
 

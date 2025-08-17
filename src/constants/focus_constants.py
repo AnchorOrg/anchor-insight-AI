@@ -21,7 +21,6 @@ FOCUS_ANALYSIS_PROMPT = (
 
 # API response confidence levels
 CONFIDENCE_HIGH = "high"
-CONFIDENCE_LOW = "low"
 
 # File size limits
 BYTES_PER_MB = 1024 * 1024

@@ -6,10 +6,9 @@ from typing import Annotated, Generator
 from fastapi import Depends
 import openai
 
-from src.config.settings import focus_score_settings, FocusScoreSettings, get_focus_score_settings
+from src.config.settings import FocusScoreSettings, get_focus_score_settings
 
 logger = logging.getLogger(__name__)
-
 
 def get_openai_client(
     settings: Annotated[FocusScoreSettings, Depends(get_focus_score_settings)]

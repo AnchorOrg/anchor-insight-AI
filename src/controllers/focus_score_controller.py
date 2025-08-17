@@ -1,7 +1,6 @@
 """
 Focus score analysis controller
 """
-import time
 import logging
 from typing import Annotated
 from fastapi import APIRouter, File, UploadFile, Depends
