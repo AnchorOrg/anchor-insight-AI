@@ -112,7 +112,3 @@ def get_settings() -> AppSettings:
 def get_focus_score_settings() -> FocusScoreSettings:
     """Cached focus score settings (singleton per process)."""
     return FocusScoreSettings()
-
-# Backwards-compatible aliases (DEPRECATED: prefer calling the functions)
-app_settings = get_settings()
-focus_score_settings = get_focus_score_settings()

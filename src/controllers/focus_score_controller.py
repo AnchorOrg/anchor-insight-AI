@@ -7,7 +7,7 @@ from fastapi import APIRouter, File, UploadFile, Depends
 
 from src.dependencies import SettingsDep, OpenAIClientDep
 from src.services.focus_score_service import FocusScoreService
-from src.models.focus_models import FocusScoreResponse, HealthResponse
+from src.models.focus_models import FocusScoreResponse, FocusScoreHealthResponse
 from src.constants.focus_constants import API_VERSION
 
 logger = logging.getLogger(__name__)
@@ -46,26 +46,27 @@ async def analyze_uploads(
     # Use service to process the file
     return await service.analyze_uploaded_file(image_bytes, file.content_type)
 
-
-# URL endpoint removed based on TODO requirements:
 # "From my understanding, this should be totally deleted"
 # The URL analysis functionality has been removed to simplify the API
 # and focus on file upload analysis only.
 
-
-@focus_score_router.get("/health", summary="Health check")
-def check_health(settings: SettingsDep):
+@focus_score_router.get(
+    "/health",
+    summary="Health check",
+    response_model=FocusScoreHealthResponse,
+)
+def check_health(settings: SettingsDep) -> FocusScoreHealthResponse:
     """Basic health check endpoint"""
-    return {
-        "status": "ok", 
-        "message": "Focus Score API is running",
-        "version": API_VERSION,
-        "settings": {
+    return FocusScoreHealthResponse(
+        status="ok",
+        message="Focus Score API is running",
+        version=API_VERSION,
+        settings={
             "model": settings.model_id,
             "max_file_size_mb": settings.max_file_size_mb,
-            "max_retries": settings.max_retries
-        }
-    }
+            "max_retries": settings.max_retries,
+        },
+    )
 
 
 @focus_score_router.get("/health/detail", summary="Detailed health check")

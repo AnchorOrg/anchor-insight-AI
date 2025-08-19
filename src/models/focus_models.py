@@ -20,6 +20,13 @@ class SummaryResponse(BaseModel):
     focus_sessions: int
     leave_sessions: int
 
+class FocusScoreHealthResponse(BaseModel):
+    """Response model for focus score service health check"""
+    status: str
+    message: str
+    version: str
+    settings: Dict[str, Any]
+
 
 class TimeRecord(BaseModel):
     """Model for individual time record"""

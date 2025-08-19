@@ -152,7 +152,7 @@ async def get_latest_record(session_id: str = "default"):
 async def health_check():
     active_sessions = session_manager.list_sessions()
     monitoring_active = any(
-        (session_manager.get_session(s) and session_manager.get_session(s).is_running)
+        (monitor := session_manager.get_session(s)) and monitor.is_running
         for s in active_sessions
     )
     return HealthResponse(status="healthy", monitoring_active=monitoring_active, timestamp=datetime.utcnow().isoformat())

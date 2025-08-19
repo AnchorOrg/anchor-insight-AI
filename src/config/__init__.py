@@ -1,6 +1,14 @@
-"""
-Configuration package for anchor-insight-AI
-"""
-from .settings import app_settings, MonitorConfig, focus_score_settings, FocusScoreSettings
+"""Configuration package for anchor-insight-AI"""
+from .settings import (
+    MonitorConfig,
+    FocusScoreSettings,
+    get_settings,
+    get_focus_score_settings,
+)
 
-__all__ = ["app_settings", "MonitorConfig", "focus_score_settings", "FocusScoreSettings"]
+__all__ = [
+    "MonitorConfig",
+    "FocusScoreSettings",
+    "get_settings",
+    "get_focus_score_settings",
+]

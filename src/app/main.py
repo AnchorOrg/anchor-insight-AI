@@ -20,6 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.config.settings import get_settings
 from src.controllers.focus_controller import focus_router
 from src.controllers.focus_score_controller import focus_score_router
+from src.constants.focus_constants import API_VERSION
 
 # Configure logging
 logging.basicConfig(
@@ -47,7 +48,6 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("Shutting down Anchor Insight AI unified service")
 
 # Create unified FastAPI application
-API_VERSION = "1.0.0"
 API_PREFIX = f"/api/v1"
 
 app = FastAPI(
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     import uvicorn
     settings = get_settings()
     uvicorn.run(
-        "src.main:app",
+        "src.app.main:app",
         host=settings.api_host,
         port=settings.api_port,
         reload=settings.api_reload,

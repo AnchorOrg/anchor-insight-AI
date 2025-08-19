@@ -7,10 +7,9 @@ import asyncio
 import logging
 import json
 from typing import Tuple
-
+from datetime import datetime, timezone
 import openai
 from fastapi import HTTPException
-
 from src.config.settings import FocusScoreSettings
 from src.constants.focus_constants import (
     FOCUS_ANALYSIS_PROMPT, ALLOWED_MIME_TYPES, 
@@ -19,7 +18,6 @@ from src.constants.focus_constants import (
 from src.models.focus_models import FocusScoreResponse
 
 logger = logging.getLogger(__name__)
-
 
 class FocusScoreService:
     """Service for analyzing focus scores from images"""
@@ -196,7 +194,7 @@ class FocusScoreService:
         return {
             "status": "healthy",
             "openai_api": openai_status,
-            "timestamp": time.time(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "settings": {
                 "model": self.settings.model_id,
                 "max_file_size_mb": self.settings.max_file_size_mb,
