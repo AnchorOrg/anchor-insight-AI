@@ -17,7 +17,7 @@ class FocusScoreSettings(BaseSettings):
         extra="ignore"
     )
 
-    openai_api_key: str = Field(default="test-your-openai-api-key-here", description="OpenAI API key")
+    openai_api_key: str = Field(default="test-your-here", description="OpenAI API key")
     model_id: str = Field(default="gpt-5", description="OpenAI model ID")
     max_file_size_mb: int = Field(default=10, description="Maximum file size in MB")
     url_timeout_seconds: int = Field(default=30, description="URL request timeout")
