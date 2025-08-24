@@ -17,8 +17,8 @@ class FocusScoreSettings(BaseSettings):
         extra="ignore"
     )
     
-    openai_api_key: str = Field(default="sk-test-key-for-testing", description="OpenAI API key")
-    model_id: str = Field(default="gpt-4o-mini", description="OpenAI model ID")
+    openai_api_key: str = Field(default="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", description="OpenAI API key")
+    model_id: str = Field(default="gpt-5", description="OpenAI model ID")
     max_file_size_mb: int = Field(default=10, description="Maximum file size in MB")
     url_timeout_seconds: int = Field(default=30, description="URL request timeout")
     max_retries: int = Field(default=3, description="Maximum retry attempts")
@@ -26,8 +26,6 @@ class FocusScoreSettings(BaseSettings):
     
     # OpenAI specific settings
     temperature: float = Field(default=0.1, description="OpenAI temperature setting")
-    max_tokens: int = Field(default=1000, description="Maximum tokens for OpenAI response")
-    
     # Testing mode
     test_mode: bool = Field(default=False, description="Enable test mode")
     

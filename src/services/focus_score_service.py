@@ -66,8 +66,7 @@ class FocusScoreService:
                             ],
                         },
                     ],
-                    temperature=self.settings.temperature,
-                    max_tokens=self.settings.max_tokens
+                    temperature=self.settings.temperature
                 )
                 
                 # Safe response parsing with validation

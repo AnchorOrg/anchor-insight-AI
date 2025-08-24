@@ -144,7 +144,7 @@ class PersonMonitorService:
             save=False,
             conf=settings.confidence_threshold,
             iou=settings.iou_threshold,
-            device='0',
+            device='cpu',
             half=False
         )
         person_found = False
