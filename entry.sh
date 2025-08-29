@@ -80,7 +80,7 @@ run_production() {
     check_docker
     check_env_file
     
-    print_status "Starting Anchor Insight AI in production mode..."
+    print_status "Starting Anchor Insight AI in production mode..." # TODO: the env info should come from the .env -> APP_ENV 
     docker-compose up --build -d
     
     print_status "Application is starting up..."

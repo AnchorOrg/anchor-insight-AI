@@ -69,14 +69,14 @@ python src/main_refactored.py
 
 2. **开发环境设置**
    ```bash
-   ENVIRONMENT=development
+   APP_ENV=development
    API_RELOAD=true
    LOG_LEVEL=debug
    ```
 
 3. **生产环境设置**
    ```bash
-   ENVIRONMENT=production
+   APP_ENV=production
    API_RELOAD=false
    LOG_LEVEL=info
    ```
