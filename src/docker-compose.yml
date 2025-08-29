@@ -1,13 +1,13 @@
 # Docker Compose configuration for Anchor Insight AI
 # Provides easy development and production deployment
-
+# ingz removing duplicate
 version: '3.8'
 
 services:
   anchor-insight-ai:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: src/Dockerfile
     container_name: anchor-insight-ai
     ports:
       - "7003:7003"

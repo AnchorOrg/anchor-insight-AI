@@ -70,7 +70,7 @@ check_env_file() {
 # Function to build Docker image
 build_image() {
     print_status "Building Docker image..."
-    docker build -t anchor-insight-ai .
+    docker build -t anchor-insight-ai -f src/Dockerfile .
     print_status "Docker image built successfully"
 }
 
@@ -81,7 +81,7 @@ run_production() {
     check_env_file
     
     print_status "Starting Anchor Insight AI in production mode..." # TODO: the env info should come from the .env -> APP_ENV 
-    docker-compose up --build -d
+    docker-compose -f src/docker-compose.yml up --build -d
     
     print_status "Application is starting up..."
     print_status "Waiting for health check..."
@@ -106,29 +106,29 @@ run_development() {
     check_env_file
     
     print_status "Starting Anchor Insight AI in development mode..."
-    docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+    docker-compose -f src/docker-compose.yml -f src/docker-compose.dev.yml up --build
 }
 
 # Function to stop the application
 stop_application() {
     print_status "Stopping Anchor Insight AI..."
-    docker-compose down
+    docker-compose -f src/docker-compose.yml down
     print_status "Application stopped"
 }
 
 # Function to show logs
 show_logs() {
-    docker-compose logs -f
+    docker-compose -f src/docker-compose.yml logs -f
 }
 
 # Function to show status
 show_status() {
     print_status "Checking application status..."
-    docker-compose ps
+    docker-compose -f src/docker-compose.yml ps
     echo ""
     
     # Check if container is running and healthy
-    if docker-compose ps | grep -q "Up"; then
+    if docker-compose -f src/docker-compose.yml ps | grep -q "Up"; then
         print_status "✅ Application is running"
         if curl -f http://localhost:7003/health &> /dev/null; then
             print_status "✅ Health check passed"
@@ -143,7 +143,7 @@ show_status() {
 # Function to clean up Docker resources
 cleanup() {
     print_status "Cleaning up Docker resources..."
-    docker-compose down -v --remove-orphans
+    docker-compose -f src/docker-compose.yml down -v --remove-orphans
     docker system prune -f
     print_status "Cleanup completed"
 }

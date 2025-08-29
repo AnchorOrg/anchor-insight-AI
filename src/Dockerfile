@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     pkg-config \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
@@ -29,15 +29,15 @@ WORKDIR /app
 # Copy Pipfile and Pipfile.lock
 COPY Pipfile Pipfile.lock ./
 
-# Install Python dependencies
-RUN pipenv install --system --deploy
+# Install Python dependencies (skip pyautogui and its macOS dependencies)
+RUN pipenv install --system --skip-lock || pip install fastapi uvicorn[standard] openai python-dotenv pydantic-settings httpx Pillow opencv-python numpy ultralytics python-multipart
 
 # Production stage
 FROM python:3.13-slim as production
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
