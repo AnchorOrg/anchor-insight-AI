@@ -65,7 +65,7 @@ class TestFocusScoreServiceRetry:
         }
         mock_openai_client.chat.completions.create = AsyncMock(return_value=mock_response)
         
-        # Mock the pydantic parsing (兼容v1/v2)
+        # Mock the pydantic parsing (v1/v2 compatibility)
         with patch.object(FocusScoreResponse, 'model_validate', return_value=FocusScoreResponse(
             focus_score=85,
             confidence="high",
