@@ -1,6 +1,6 @@
 # Anchor Insight AI - API Testing Guide
 
-## 🚀 Hoppscotch测试集合使用指南
+🚀 Hoppscotch测试集合使用指南
 
 本文档介绍如何使用Hoppscotch测试集合来全面测试Anchor Insight AI的统一API服务。
 
@@ -19,10 +19,12 @@ winget install --id=hoppscotch.Hoppscotch -e
 我们的测试集合包含以下几个主要部分：
 
 #### 🏠 Core Endpoints（核心端点）
+
 - **Root Service Info** - 获取服务基本信息
 - **Health Check Global** - 全局健康检查
 
 #### 📹 Focus Monitor（摄像头焦点监控）
+
 - **Monitor Health Check** - 监控服务健康检查
 - **Start Monitoring Session** - 开始监控会话
 - **Get Monitor Status** - 获取监控状态
@@ -35,11 +37,13 @@ winget install --id=hoppscotch.Hoppscotch -e
 - **Delete Session** - 删除会话
 
 #### 🖼️ Focus Analysis（图像焦点分析）
+
 - **Analyze Health Check** - 分析服务健康检查
 - **Detailed Health Check** - 详细健康检查
 - **Upload Image for Analysis** - 上传图像进行分析
 
 #### 🧪 Edge Cases & Error Testing（边界情况和错误测试）
+
 - **Invalid Endpoint 404 Test** - 测试不存在的端点
 - **Invalid Session ID Test** - 测试无效会话ID
 - **Malformed JSON Test** - 测试格式错误的JSON
@@ -47,15 +51,17 @@ winget install --id=hoppscotch.Hoppscotch -e
 ### 🔧 使用步骤
 
 #### 1. 启动服务
+
 ```bash
 cd anchor-insight-AI
 export PYTHONPATH="$(pwd)"
 export OPENAI_API_KEY="your-openai-api-key"
-export ENVIRONMENT="development"
+export APP_ENV="development"
 python -m uvicorn src.main_refactored:app --host 127.0.0.1 --port 8003
 ```
 
 #### 2. 导入测试集合
+
 1. 打开Hoppscotch应用
 2. 点击"Import/Export"
 3. 选择"Import from JSON"
@@ -64,6 +70,7 @@ python -m uvicorn src.main_refactored:app --host 127.0.0.1 --port 8003
 #### 3. 运行测试
 
 **基础测试流程：**
+
 1. 先运行 `🏠 Core Endpoints` 验证服务正常
 2. 运行 `📹 Focus Monitor` 按顺序测试监控功能
 3. 运行 `🖼️ Focus Analysis` 测试图像分析功能
@@ -80,18 +87,21 @@ python -m uvicorn src.main_refactored:app --host 127.0.0.1 --port 8003
 ### ⚠️ 重要的边界测试用例
 
 #### 监控服务边界测试：
+
 1. **重复启动会话** - 测试多次启动同一会话的处理
 2. **停止不存在的会话** - 测试停止不存在会话的错误处理
 3. **无效会话ID查询** - 测试使用不存在的会话ID查询状态
 4. **并发会话管理** - 测试多个会话同时运行的情况
 
 #### 图像分析边界测试：
+
 1. **无文件上传** - 应该返回422 Unprocessable Entity
 2. **错误文件类型** - 上传非图像文件应该返回400 Bad Request
 3. **文件过大** - 超出限制的文件应该返回413 Payload Too Large
 4. **损坏的图像文件** - 应该优雅处理并返回适当错误
 
 #### 系统级边界测试：
+
 1. **高频率请求** - 测试API的并发处理能力
 2. **长时间运行会话** - 测试内存泄漏和资源管理
 3. **服务重启恢复** - 测试服务重启后会话状态的处理
@@ -101,6 +111,7 @@ python -m uvicorn src.main_refactored:app --host 127.0.0.1 --port 8003
 #### 成功响应示例：
 
 **健康检查 (200 OK):**
+
 ```json
 {
   "status": "healthy",
@@ -109,6 +120,7 @@ python -m uvicorn src.main_refactored:app --host 127.0.0.1 --port 8003
 ```
 
 **监控状态 (200 OK):**
+
 ```json
 {
   "is_monitoring": true,
@@ -119,6 +131,7 @@ python -m uvicorn src.main_refactored:app --host 127.0.0.1 --port 8003
 ```
 
 **焦点分析 (200 OK):**
+
 ```json
 {
   "focus_score": 85,
@@ -131,6 +144,7 @@ python -m uvicorn src.main_refactored:app --host 127.0.0.1 --port 8003
 #### 错误响应示例：
 
 **未找到端点 (404):**
+
 ```json
 {
   "detail": "Not Found"
@@ -138,6 +152,7 @@ python -m uvicorn src.main_refactored:app --host 127.0.0.1 --port 8003
 ```
 
 **无效请求 (422):**
+
 ```json
 {
   "detail": [
@@ -164,16 +179,19 @@ python -m uvicorn src.main_refactored:app --host 127.0.0.1 --port 8003
 #### 常见问题：
 
 **连接被拒绝：**
+
 - 确保服务正在运行在正确端口（8003）
 - 检查防火墙设置
 - 验证服务启动日志
 
 **OpenAI API错误：**
+
 - 确保设置了有效的OPENAI_API_KEY
 - 检查API配额和权限
 - 验证网络连接
 
 **文件上传失败：**
+
 - 确保图像文件格式正确（JPEG, PNG等）
 - 检查文件大小限制
 - 验证Content-Type头设置

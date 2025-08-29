@@ -91,9 +91,9 @@ run_production() {
     
     echo ""
     print_status "🚀 Anchor Insight AI is now running!"
-    echo -e "   📍 API URL: ${GREEN}http://localhost:8000${NC}"
-    echo -e "   📖 API Docs: ${GREEN}http://localhost:8000/docs${NC}"
-    echo -e "   🏥 Health Check: ${GREEN}http://localhost:8000/health${NC}"
+    echo -e "   📍 API URL: ${GREEN}http://localhost:7003${NC}"
+    echo -e "   📖 API Docs: ${GREEN}http://localhost:7003/docs${NC}"
+    echo -e "   🏥 Health Check: ${GREEN}http://localhost:7003/health${NC}"
     echo ""
     echo -e "To view logs: ${BLUE}docker-compose logs -f${NC}"
     echo -e "To stop: ${BLUE}docker-compose down${NC}"
@@ -130,7 +130,7 @@ show_status() {
     # Check if container is running and healthy
     if docker-compose ps | grep -q "Up"; then
         print_status "✅ Application is running"
-        if curl -f http://localhost:8000/health &> /dev/null; then
+        if curl -f http://localhost:7003/health &> /dev/null; then
             print_status "✅ Health check passed"
         else
             print_warning "⚠️  Health check failed - application may still be starting"

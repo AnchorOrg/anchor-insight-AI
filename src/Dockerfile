@@ -68,11 +68,11 @@ RUN useradd --create-home --shell /bin/bash anchor && \
 USER anchor
 
 # Expose the port the app runs on
-EXPOSE 8000
+EXPOSE 7003
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/health')" || exit 1
+    CMD python -c "import requests; requests.get('http://localhost:7003/health')" || exit 1
 
 # Run the application
 CMD ["python", "-m", "src.main_refactored"]

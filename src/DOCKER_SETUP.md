@@ -22,9 +22,9 @@ chmod +x entry.sh
 ```
 
 The application will be available at:
-- **API URL**: http://localhost:8000
-- **API Documentation**: http://localhost:8000/docs
-- **Health Check**: http://localhost:8000/health
+- **API URL**: http://localhost:7003
+- **API Documentation**: http://localhost:7003/docs
+- **Health Check**: http://localhost:7003/health
 
 ### 🔧 Development Mode
 
@@ -92,7 +92,7 @@ To stop and clean up all Docker resources:
 - **Volume mounts**: Persistent configuration and development workflow
 
 ### Ports
-- **8000**: Main API service port
+- **7003**: Main API service port
 
 ## 🔍 Troubleshooting
 
