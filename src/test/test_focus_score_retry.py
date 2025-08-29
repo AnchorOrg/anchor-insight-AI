@@ -115,7 +115,7 @@ class TestFocusScoreServiceRetry:
         """Test that OpenAI API errors are not retried"""
         from fastapi import HTTPException
         
-        # Mock OpenAI API error (简单方式，测试重点是不重试)
+        # Mock OpenAI API error (simple approach, testing focus is no retry)
         mock_openai_client.chat.completions.create.side_effect = openai.APIError(
             message="API key invalid", 
             request=Mock(),
