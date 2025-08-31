@@ -14,6 +14,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# https://github.com/AnchorOrg/anchor-insight-AI/issues/26 todo 
 # Function to print colored output
 print_status() {
     echo -e "${GREEN}[INFO]${NC} $1"
