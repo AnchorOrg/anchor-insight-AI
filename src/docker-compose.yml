@@ -1,21 +1,21 @@
 # Docker Compose configuration for Anchor Insight AI
 # Provides easy development and production deployment
-
+# ingz removing duplicate
 version: '3.8'
 
 services:
   anchor-insight-ai:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: src/Dockerfile
     container_name: anchor-insight-ai
     ports:
-      - "8000:8000"
+      - "7003:7003"
     environment:
       # Override default settings for containerized environment
-      - ENVIRONMENT=production
+      - APP_ENV=production
       - HOST=0.0.0.0
-      - PORT=8000
+      - PORT=7003
       # Camera settings for container
       - CAMERA_INDEX=0
       - CAMERA_WIDTH=640
@@ -32,7 +32,7 @@ services:
     networks:
       - anchor-network
     healthcheck:
-      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health')"]
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:7003/health')"]
       interval: 30s
       timeout: 10s
       retries: 3

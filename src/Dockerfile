@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     pkg-config \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
@@ -29,15 +29,15 @@ WORKDIR /app
 # Copy Pipfile and Pipfile.lock
 COPY Pipfile Pipfile.lock ./
 
-# Install Python dependencies
-RUN pipenv install --system --deploy
+# Install Python dependencies (skip pyautogui and its macOS dependencies)
+RUN pipenv install --system --skip-lock || pip install fastapi uvicorn[standard] openai python-dotenv pydantic-settings httpx Pillow opencv-python numpy ultralytics python-multipart
 
 # Production stage
 FROM python:3.13-slim as production
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
@@ -68,11 +68,11 @@ RUN useradd --create-home --shell /bin/bash anchor && \
 USER anchor
 
 # Expose the port the app runs on
-EXPOSE 8000
+EXPOSE 7003
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/health')" || exit 1
+    CMD python -c "import requests; requests.get('http://localhost:7003/health')" || exit 1
 
 # Run the application
 CMD ["python", "-m", "src.main_refactored"]
