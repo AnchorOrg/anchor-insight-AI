@@ -79,7 +79,7 @@ class AppSettings(BaseSettings):
     
     # API settings
     api_host: str = Field(default="0.0.0.0", description="API host")
-    api_port: int = Field(default=8001, description="API port")
+    api_port: int = Field(default=7003, description="API port")
     api_reload: bool = Field(default=False, description="API reload in development")
     log_level: str = Field(default="info", description="Logging level")
     
