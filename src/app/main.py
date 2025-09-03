@@ -21,6 +21,7 @@ from src.config.settings import get_settings
 from src.controllers.focus_controller import focus_router
 from src.controllers.focus_score_controller import focus_score_router
 from src.constants.focus_constants import API_VERSION
+import uvicorn  
 
 # Configure logging
 logging.basicConfig(
@@ -87,7 +88,6 @@ async def health_check():
     return {"status": "healthy", "version": API_VERSION}
 
 if __name__ == "__main__":
-    import uvicorn
     settings = get_settings()
     uvicorn.run(
         "src.app.main:app",

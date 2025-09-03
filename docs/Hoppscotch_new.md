@@ -41,7 +41,7 @@ npm install -g @hoppscotch/cli
 导入后，检查以下环境变量设置：
 
 **Development Environment:**
-- `base_url`: `http://127.0.0.1:8001`  
+- `base_url`: `http://127.0.0.1:7003`  
 - `session_id`: `test-session-001`
 - `user_id`: `user_123`
 
@@ -194,7 +194,7 @@ pw.test("Response has session_id", () => {
 ## 环境配置
 
 ### Development (开发环境)
-- **服务器**: `http://127.0.0.1:8001`
+- **服务器**: `http://127.0.0.1:7003`
 - **用途**: 本地开发和调试
 - **特点**: 包含详细错误信息，支持热重载
 

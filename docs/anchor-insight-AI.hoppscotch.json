@@ -8,7 +8,7 @@
       "requests": [
         {
           "name": "Create Focus Session",
-          "url": "http://127.0.0.1:8001/api/v1/session",
+          "url": "http://127.0.0.1:7003/api/v1/session",
           "path": "/api/v1/session",
           "method": "POST",
           "auth": {
@@ -39,7 +39,7 @@
       "requests": [
         {
           "name": "Upload Camera Video Chunk",
-          "url": "http://127.0.0.1:8001/api/v1/session/{{session_id}}/stream/camera",
+          "url": "http://127.0.0.1:7003/api/v1/session/{{session_id}}/stream/camera",
           "path": "/api/v1/session/{{session_id}}/stream/camera",
           "method": "POST",
           "auth": {
@@ -78,7 +78,7 @@
         },
         {
           "name": "Upload Screen Screenshot",
-          "url": "http://127.0.0.1:8001/api/v1/session/{{session_id}}/stream/screen",
+          "url": "http://127.0.0.1:7003/api/v1/session/{{session_id}}/stream/screen",
           "path": "/api/v1/session/{{session_id}}/stream/screen",
           "method": "POST",
           "auth": {
@@ -124,7 +124,7 @@
       "requests": [
         {
           "name": "Send Focus Notification",
-          "url": "http://127.0.0.1:8001/api/v1/session/{{session_id}}/notifications",
+          "url": "http://127.0.0.1:7003/api/v1/session/{{session_id}}/notifications",
           "path": "/api/v1/session/{{session_id}}/notifications",
           "method": "POST",
           "auth": {
@@ -148,7 +148,7 @@
         },
         {
           "name": "Submit Session Feedback",
-          "url": "http://127.0.0.1:8001/api/v1/session/{{session_id}}/feedback",
+          "url": "http://127.0.0.1:7003/api/v1/session/{{session_id}}/feedback",
           "path": "/api/v1/session/{{session_id}}/feedback",
           "method": "POST",
           "auth": {
@@ -179,7 +179,7 @@
       "requests": [
         {
           "name": "Get Current Session Score",
-          "url": "http://127.0.0.1:8001/api/v1/sessions/{{session_id}}/score",
+          "url": "http://127.0.0.1:7003/api/v1/sessions/{{session_id}}/score",
           "path": "/api/v1/sessions/{{session_id}}/score",
           "method": "POST",
           "auth": {
@@ -203,7 +203,7 @@
         },
         {
           "name": "Generate Session Report",
-          "url": "http://127.0.0.1:8001/api/v1/sessions/{{session_id}}/report",
+          "url": "http://127.0.0.1:7003/api/v1/sessions/{{session_id}}/report",
           "path": "/api/v1/sessions/{{session_id}}/report",
           "method": "POST",
           "auth": {
@@ -250,7 +250,7 @@
       "variables": [
         {
           "key": "base_url",
-          "value": "http://127.0.0.1:8001"
+          "value": "http://127.0.0.1:7003"
         },
         {
           "key": "session_id",
