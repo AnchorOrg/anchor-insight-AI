@@ -42,7 +42,7 @@ Image analysis service for calculating focus scores
 pipenv run python src/app/get_focus_score.py
 ```
 
-### 3. Focus Time Service (Port 8001)
+### 3. Focus Time Service (Port 7003)
 Person detection and time tracking service
 ```bash
 pipenv run python src/app/get_focus_time.py
@@ -64,7 +64,7 @@ Once services are running:
 - **Main API**: http://localhost:8080/docs
 - **Health Check**: http://localhost:8080/health
 - **Focus Score API**: http://localhost:8002/docs
-- **Focus Time API**: http://localhost:8001/docs
+- **Focus Time API**: http://localhost:7003/docs
 
 ## 🛠️ Additional Commands
 
@@ -114,7 +114,7 @@ pipenv install package_name --dev
 |----------|-------------|---------|
 | `OPENAI_API_KEY` | Your OpenAI API key | Required |
 | `MODEL_ID` | OpenAI model to use | `gpt-4o-mini` |
-| `FOCUS_TIME_SERVICE_URL` | Focus time service URL | `http://localhost:8001` |
+| `FOCUS_TIME_SERVICE_URL` | Focus time service URL | `http://localhost:7003` |
 | `FOCUS_SCORE_SERVICE_URL` | Focus score service URL | `http://localhost:8002` |
 | `MAX_FILE_SIZE_MB` | Maximum file size | `10` |
 | `URL_TIMEOUT_SECONDS` | Request timeout | `30` |
