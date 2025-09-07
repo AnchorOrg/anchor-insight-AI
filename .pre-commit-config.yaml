@@ -1,0 +1,27 @@
+repos:
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        name: detect-secrets (staged)
+        args:
+          - --baseline
+          - .secrets.baseline
+        # Exclude Hoppscotch files, env template, test images, large/binary assets
+        exclude: ^(docs/hoppscotch\.json|docs/hoppscotch\.md|\.env\.template|yolo11s-pose\.pt|src/test/test_imgs/|Pipfile\.lock)
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+        name: gitleaks protect (staged)
+        args:
+          - protect
+          - --staged
+          - --redact
+          - --no-banner
+          - -c
+          - .gitleaks.toml
+        pass_filenames: false
+        # Mirror excludes here to minimize noise if config path not found
+        exclude: ^(docs/hoppscotch\.json|docs/hoppscotch\.md|yolo11s-pose\.pt|src/test/test_imgs/|Pipfile\.lock)
