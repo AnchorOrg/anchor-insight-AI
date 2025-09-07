@@ -1,0 +1,268 @@
+{
+  "v": 10,
+  "name": "Anchor Insight AI",
+  "folders": [
+    {
+      "name": "General",
+      "requests": [
+        {
+          "v": "15",
+          "name": "Root",
+          "method": "GET",
+          "endpoint": "http://localhost:7003/",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": { "authType": "inherit", "authActive": true },
+          "body": { "contentType": null, "body": null },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "15",
+          "name": "Health Check",
+          "method": "GET",
+          "endpoint": "http://localhost:7003/health",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": { "authType": "inherit", "authActive": true },
+          "body": { "contentType": null, "body": null },
+          "requestVariables": [],
+          "responses": {}
+        }
+      ],
+      "folders": [],
+      "auth": { "authType": "inherit", "authActive": true },
+      "headers": []
+    },
+    {
+      "name": "Monitor Service",
+      "requests": [
+        {
+          "v": "15",
+          "name": "Start Monitoring",
+          "method": "POST",
+          "endpoint": "http://localhost:7003/api/v1/monitor/start",
+          "params": [
+            { "key": "session_id", "value": "default", "active": true }
+          ],
+          "headers": [
+            { "key": "Content-Type", "value": "application/json", "active": true }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": { "authType": "inherit", "authActive": true },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"show_window\": false,\n  \"model_path\": \"yolo11s-pose.pt\",\n  \"camera_index\": 0\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "15",
+          "name": "Stop Monitoring",
+          "method": "POST",
+          "endpoint": "http://localhost:7003/api/v1/monitor/stop",
+          "params": [
+            { "key": "session_id", "value": "default", "active": true }
+          ],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": { "authType": "inherit", "authActive": true },
+          "body": { "contentType": null, "body": null },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "15",
+          "name": "Get Status",
+          "method": "GET",
+          "endpoint": "http://localhost:7003/api/v1/monitor/status",
+          "params": [
+            { "key": "session_id", "value": "default", "active": true }
+          ],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": { "authType": "inherit", "authActive": true },
+          "body": { "contentType": null, "body": null },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "15",
+          "name": "Get Focus Score",
+          "method": "GET",
+          "endpoint": "http://localhost:7003/api/v1/monitor/score",
+          "params": [
+            { "key": "session_id", "value": "default", "active": true }
+          ],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": { "authType": "inherit", "authActive": true },
+          "body": { "contentType": null, "body": null },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "15",
+          "name": "Get Records",
+          "method": "GET",
+          "endpoint": "http://localhost:7003/api/v1/monitor/records",
+          "params": [
+            { "key": "session_id", "value": "default", "active": true }
+          ],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": { "authType": "inherit", "authActive": true },
+          "body": { "contentType": null, "body": null },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "15",
+          "name": "Get Summary",
+          "method": "GET",
+          "endpoint": "http://localhost:7003/api/v1/monitor/summary",
+          "params": [
+            { "key": "session_id", "value": "default", "active": true }
+          ],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": { "authType": "inherit", "authActive": true },
+          "body": { "contentType": null, "body": null },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "15",
+          "name": "Get Latest Record",
+          "method": "GET",
+          "endpoint": "http://localhost:7003/api/v1/monitor/latest",
+          "params": [
+            { "key": "session_id", "value": "default", "active": true }
+          ],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": { "authType": "inherit", "authActive": true },
+          "body": { "contentType": null, "body": null },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "15",
+          "name": "Health Check",
+          "method": "GET",
+          "endpoint": "http://localhost:7003/api/v1/monitor/health",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": { "authType": "inherit", "authActive": true },
+          "body": { "contentType": null, "body": null },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "15",
+          "name": "List Sessions",
+          "method": "GET",
+          "endpoint": "http://localhost:7003/api/v1/monitor/sessions",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": { "authType": "inherit", "authActive": true },
+          "body": { "contentType": null, "body": null },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "15",
+          "name": "Remove Session",
+          "method": "DELETE",
+          "endpoint": "http://localhost:7003/api/v1/monitor/session/default",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": { "authType": "inherit", "authActive": true },
+          "body": { "contentType": null, "body": null },
+          "requestVariables": [],
+          "responses": {}
+        }
+      ],
+      "folders": [],
+      "auth": { "authType": "inherit", "authActive": true },
+      "headers": []
+    },
+    {
+      "name": "Focus Score Service",
+      "requests": [
+        {
+          "v": "15",
+          "name": "Analyze Uploads",
+          "method": "POST",
+          "endpoint": "http://localhost:7003/api/v1/analyze/upload",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": { "authType": "inherit", "authActive": true },
+          "body": {
+            "contentType": "multipart/form-data",
+            "body": [
+              { "key": "file", "value": "", "isFile": true, "active": true }
+            ]
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "15",
+          "name": "Health Check",
+          "method": "GET",
+          "endpoint": "http://localhost:7003/api/v1/analyze/health",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": { "authType": "inherit", "authActive": true },
+          "body": { "contentType": null, "body": null },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "15",
+          "name": "Detailed Health Check",
+          "method": "GET",
+          "endpoint": "http://localhost:7003/api/v1/analyze/health/detail",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": { "authType": "inherit", "authActive": true },
+          "body": { "contentType": null, "body": null },
+          "requestVariables": [],
+          "responses": {}
+        }
+      ],
+      "folders": [],
+      "auth": { "authType": "inherit", "authActive": true },
+      "headers": []
+    }
+  ],
+  "requests": [],
+  "auth": { "authType": "none", "authActive": true },
+  "headers": [],
+  "variables": []
+}

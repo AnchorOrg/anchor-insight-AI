@@ -235,6 +235,7 @@ show_usage() {
     echo "  • NumPy - Numerical computing"
     echo "  • Ultralytics - YOLO models"
     echo "  • PyTorch - Deep learning"
+<<<<<<< HEAD
     echo ""
     echo "🚀 To run the application:"
     echo ""
@@ -246,12 +247,11 @@ show_usage() {
     echo "     ${GREEN}uvicorn src.app.main:app --host 0.0.0.0 --port 8000 --reload${NC}"
     echo ""
     echo "📝 API Documentation:"
-    echo "  • Swagger UI: http://localhost:8000/docs"
-    echo "  • ReDoc: http://localhost:8000/redoc"
+    echo "  • Swagger UI: http://localhost:7003/docs"
+    echo "  • ReDoc: http://localhost:7003/redoc"
     echo ""
-    
     if [[ "$OS" == "WSL" ]]; then
-        print_info "WSL: Access from Windows browser at http://localhost:8000"
+        print_info "WSL: Access from Windows browser at http://localhost:7003"
     fi
     
     # Show virtual environment location
