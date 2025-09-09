@@ -235,7 +235,6 @@ show_usage() {
     echo "  • NumPy - Numerical computing"
     echo "  • Ultralytics - YOLO models"
     echo "  • PyTorch - Deep learning"
-<<<<<<< HEAD
     echo ""
     echo "🚀 To run the application:"
     echo ""
