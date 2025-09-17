@@ -1,0 +1,14 @@
+title = "anchor-insight-AI gitleaks config"
+
+[allowlist]
+description = "Global allowlist for non-sensitive files/strings"
+# Exclude Hoppscotch artifacts, large/binary assets, and known test images
+paths = [
+  '''src/test/test_imgs/''',
+]
+
+# Ignore known test-only placeholder to reduce false positives
+regexes = [
+  '''sk-test-key-for-testing'''
+]
+

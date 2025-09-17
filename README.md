@@ -5,7 +5,7 @@ The application that is taking charge of AI related tasks mainly. 主にAI関連
 ## 🚀 Quick Setup
 
 ### Prerequisites
-- Python 3.9+ (recommended: Python 3.13)
+- Python 3.9+ (recommended: Python 3.12)
 - pipenv (will be installed automatically if not present)
 - OpenAI API Key
 

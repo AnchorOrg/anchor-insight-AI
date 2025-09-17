@@ -19,6 +19,8 @@ ultralytics = "*"
 python-multipart = "*"
 
 [dev-packages]
+pre-commit = "*"
+detect-secrets = "*"
 
 [requires]
 python_version = "3.12"
