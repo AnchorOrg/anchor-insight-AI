@@ -172,7 +172,7 @@ install_dependencies() {
     # Check if Pipfile.lock exists
     if [[ -f "Pipfile.lock" ]]; then
         print_info "Found Pipfile.lock - installing exact dependency versions..."
-        INSTALL_CMD="pipenv install --deploy --dev"
+        INSTALL_CMD="pipenv install --dev"
     else
         print_info "No Pipfile.lock found - will generate it during installation..."
         INSTALL_CMD="pipenv install --dev"
@@ -235,16 +235,15 @@ show_usage() {
     echo "  • NumPy - Numerical computing"
     echo "  • Ultralytics - YOLO models"
     echo "  • PyTorch - Deep learning"
-<<<<<<< HEAD
     echo ""
     echo "🚀 To run the application:"
     echo ""
     echo "  Option 1 - Using pipenv run:"
-    echo "     ${GREEN}pipenv run uvicorn src.app.main:app --host 0.0.0.0 --port 8000 --reload${NC}"
+    echo "     ${GREEN}pipenv run uvicorn src.app.main:app --host 0.0.0.0 --port 7003 --reload${NC}"
     echo ""
     echo "  Option 2 - Activate shell first:"
     echo "     ${GREEN}pipenv shell${NC}"
-    echo "     ${GREEN}uvicorn src.app.main:app --host 0.0.0.0 --port 8000 --reload${NC}"
+    echo "     ${GREEN}uvicorn src.app.main:app --host 0.0.0.0 --port 7003 --reload${NC}"
     echo ""
     echo "📝 API Documentation:"
     echo "  • Swagger UI: http://localhost:7003/docs"

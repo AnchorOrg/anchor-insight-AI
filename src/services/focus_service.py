@@ -177,7 +177,7 @@ class PersonMonitorService:
     def update_time_tracking(self, person_detected: bool) -> Optional[str]:
         """Update time tracking based on person detection state transitions."""
         current_time = time.time()
-        # Initial: wait for first detection to start tracking focus block
+        # Init: wait for first detection to start tracking focus block
         if not self.is_initialized:
             if person_detected:
                 self.is_initialized = True
