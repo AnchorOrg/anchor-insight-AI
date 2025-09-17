@@ -4,9 +4,6 @@ title = "anchor-insight-AI gitleaks config"
 description = "Global allowlist for non-sensitive files/strings"
 # Exclude Hoppscotch artifacts, large/binary assets, and known test images
 paths = [
-  '''docs/hoppscotch\.json''',
-  '''docs/hoppscotch\.md''',
-  '''yolo11s-pose\.pt''',
   '''src/test/test_imgs/''',
 ]
 
