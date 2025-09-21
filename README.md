@@ -1,6 +1,7 @@
 # Anchor Insight AI
 
-The application that is taking charge of AI related tasks mainly. 主にAI関連のタスクを担当するアプリケーション
+- The application that is taking charge of AI related tasks mainly. 主にAI関連のタスクを担当するアプリケーション
+- We will try to release another version in the future to make sure that this code repository could be used
 
 ## 🚀 Quick Setup
 
