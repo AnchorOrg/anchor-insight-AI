@@ -40,7 +40,9 @@ OPENAI_API_KEY=your_actual_api_key_here
 
 ## 🎯 Running the Application
 
-### Start the Unified Service (Port 7003)
+### Option 1: Using Python Directly
+
+#### Start the Unified Service (Port 7003)
 The application runs as a single unified FastAPI service that integrates focus analysis and scoring capabilities.
 
 ```bash
@@ -50,6 +52,18 @@ pipenv run python src/app/main.py
 Or using uvicorn directly:
 ```bash
 pipenv run uvicorn src.app.main:app --host 0.0.0.0 --port 7003 --reload
+```
+
+### Option 2: Using Docker
+
+```bash
+# Build and run with docker-compose
+cd src
+docker-compose up --build
+
+# Or build and run manually
+docker build -t anchor-insight-ai -f src/Dockerfile .
+docker run -p 7003:7003 --env-file .env anchor-insight-ai
 ```
 
 ## 📚 API Documentation
