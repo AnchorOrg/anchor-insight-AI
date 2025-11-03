@@ -138,7 +138,7 @@ pipenv install package_name --dev
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `OPENAI_API_KEY` | Your OpenAI API key | Required |
-| `MODEL_ID` | OpenAI model to use | `gpt-4o-mini` |
+| `MODEL_ID` | OpenAI model to use | `gpt-5-nano` |
 | `MAX_FILE_SIZE_MB` | Maximum file size for uploads | `10` |
 | `URL_TIMEOUT_SECONDS` | Request timeout | `30` |
 | `API_HOST` | Server host address | `0.0.0.0` |
